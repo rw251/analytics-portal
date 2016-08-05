@@ -1,0 +1,50 @@
+.navbar-default.sidebar(role='navigation')
+  .sidebar-nav.navbar-collapse
+    ul#side-menu.nav
+      li.sidebar-search
+      li
+        a(href='/#portal')
+          i.fa.fa-dashboard.fa-fw
+          |  Overview
+      li
+        a(href='/#portal/top10')
+          i.fa.fa-bar-chart-o.fa-fw
+          |  Top 10
+      li
+        a(href='/#portal/distributions')
+          i.fa.fa-pie-chart.fa-fw
+          |  Distributions
+      li
+        a(href='/#portal/model')
+          i.fa.fa-line-chart.fa-fw
+          |  Model
+      li
+        a(href='/#portal2')
+          i.fa.fa-sitemap.fa-fw
+          |  Multi-Level Dropdown
+          span.fa.arrow
+        ul.nav.nav-second-level
+          li
+            a(href='/#portal3') Second Level Item
+          li
+            a(href='/#portal4') Second Level Item
+          li
+            a(href='/#portal5')
+              | Third Level 
+              span.fa.arrow
+            ul.nav.nav-third-level
+              li
+                a(href='/#portal6') Third Level Item
+              li
+                a(href='/#portal7') Third Level Item
+              li
+                a(href='/#portal8') Third Level Item
+              li
+                a(href='/#portal9') Third Level Item
+            
+      li.sidebar-search
+        .input-group.custom-search-form
+          input.form-control(type='text', placeholder='Search...')
+          span.input-group-btn
+            button.btn.btn-default(type='button')
+              i.fa.fa-search

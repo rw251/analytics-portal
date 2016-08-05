@@ -1,0 +1,22 @@
+{
+  "name": "industry-portal",
+  "version": "1.0.0",
+  "description": "Mujo industry portal",
+  "main": "index.js",
+  "scripts": {
+    "start": "brunch watch --server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Richard Williams",
+  "license": "ISC",
+  "devDependencies": {
+    "auto-reload-brunch": "^2.7.1",
+    "brunch": "^2.8.2",
+    "jade-brunch": "^2.8.0",
+    "javascript-brunch": "^2.0.0",
+    "sass-brunch": "^2.6.3"
+  },
+  "dependencies": {
+    "chart.js": "^2.2.1"
+  }
+}

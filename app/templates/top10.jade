@@ -1,0 +1,8 @@
+.row
+  .col-lg-12
+    h1.page-header Top 10
+each x in [0,1,2,3]
+  .row
+    each y in [1,2,3]
+      .col-lg-4
+        canvas(id="chart"+(3*x+y))

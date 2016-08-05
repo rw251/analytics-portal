@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Mujo Industry Portal</title>
+
+    <!-- My styling -->
+    <link href="app.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="header" class="navbar navbar-default navbar-fixed-top">
+            <!-- Navigation -->
+      <div class="navbar-header">
+        <a class="navbar-brand selected" href="/#home">Home</a>
+        <a class="navbar-brand" href="/#portal">Analytics Portal</a>
+      </div>
+
+      <nav  role="navigation" style="margin-bottom: 0">
+
+      <ul class="nav navbar-top-links navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+              <li>
+                <a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+              </li>
+              <li>
+                <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                <a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+              </li>
+            </ul>
+            <!-- /.dropdown-user -->
+          </li>
+          <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+      </nav>
+    </div>
+
+    <div id="wrapper">
+      <div id="sidebar-wrapper"></div>
+
+      <div id="page-wrapper">
+        <div id="page">
+          <div class="splash-container">
+              <div class="splash">
+                  <h1 class="splash-head">MUJO INDUSTRY PORTAL</h1>
+                  <p class="splash-subhead">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                  </p>
+                  <p>
+                      <a class="btn btn-default btn-success" href="#portal">View Portal</a>
+                  </p>
+              </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery from CDN  -->
+    <script src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
+    <!-- jQuery fallback if no online version -->
+    <script>
+      window.jQuery || document.write('<script src="js/jquery/jquery-1.12.3.min.js"><\/script>')
+    </script>
+
+    <script src="libraries.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+      require("script").init();
+    </script>
+
+</body>
+
+</html>

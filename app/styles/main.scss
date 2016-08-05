@@ -1,0 +1,106 @@
+/* Splash screen home page */
+.splash-container {
+    background: #eee;
+    z-index: 1;
+    overflow: hidden;
+    /* The following styles are required for the "scroll-over" effect */
+    width: 100%;
+    height: 78%;
+    top: 0;
+    left: 0;
+    position: fixed !important;
+}
+
+.splash {
+    /* absolute center .splash within .splash-container */
+    width: 80%;
+    height: 50%;
+    margin: auto;
+    position: absolute;
+    top: 100px; left: 0; bottom: 0; right: 0;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+@media (min-width: 48em) {
+
+    /* We increase the body font size */
+    body {
+        font-size: 16px;
+    }
+
+    /* We decrease the width of the .splash, since we have more width
+    to work with */
+    .splash {
+        width: 50%;
+        height: 50%;
+    }
+
+}
+
+/*
+ * -- DESKTOP (AND UP) MEDIA QUERIES --
+ * On desktops and other large devices, we want to over-ride some
+ * of the mobile and tablet styles.
+ */
+@media (min-width: 78em) {
+    /* We increase the header font size even more */
+    .splash-head {
+        font-size: 300%;
+    }
+}
+
+.dropdown-toggle {
+  color: #777;
+}
+
+.selected {
+  border-bottom: solid 3px purple;
+}
+
+.navbar-header {
+  padding-left: 10px;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#page-wrapper {
+  background-color: #fff;
+  padding: 50px 0 0 0;
+  height: 100%;
+}
+
+.main-with-sidebar {
+    padding: 0 15px;
+    min-height: 568px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+@media(min-width:768px) {
+    .main-with-sidebar {
+        /*position: inherit;*/
+        margin: 0 0 0 250px;
+        border-left: 1px solid #e7e7e7;
+    }
+}
+
+#page {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 15px;
+}
+
+#wrapper {
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0;
+  display: inline-block;
+}
