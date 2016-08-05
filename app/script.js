@@ -16,7 +16,7 @@ var App = {
     $(document).on('ready', function() {
       //hack to auto load what i'm working on
       //location.hash="#portal";
-      //layout.loadView("#portal");
+      layout.loadView(location.hash);
     });
 
     $(window).on('popstate', function(e) {
