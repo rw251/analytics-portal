@@ -60,6 +60,11 @@
 
 .navbar-header {
   padding-left: 10px;
+  float: left; /* bootstrap removes this on small screens */
+}
+
+.navbar-right {
+  float: right; /* bootstrap removes this on small screens */
 }
 
 .container {
