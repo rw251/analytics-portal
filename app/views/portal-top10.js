@@ -8,6 +8,7 @@ var portal = {
     var tmpl = require('../templates/top10');
     var html = tmpl();
     $('#page').html(html);
+    $('#toggle-button').removeClass('home-screen');
 
     $('.navbar-brand').removeClass("selected");
     $('.navbar-brand[href*=portal]').addClass("selected");
@@ -17,7 +18,7 @@ var portal = {
     });
 
     sidebar.show();
-    sidebar.wireup();
+    //sidebar.wireup();
 
   }
 

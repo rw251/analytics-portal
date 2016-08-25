@@ -11,6 +11,15 @@
     position: fixed !important;
 }
 
+@media (max-width: 380px) {
+  .hide-if-super-small {
+    display:none;
+  }
+  .home-screen {
+    display: none;
+  }
+}
+
 .splash {
     /* absolute center .splash within .splash-container */
     width: 80%;

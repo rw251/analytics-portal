@@ -38,6 +38,42 @@ var chts = {
     });
   },
 
+  drawBMIDistribution: function(ctx){
+    data.getBMIDistribution(function(result){
+      var myLineChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: result.labels,
+            datasets: [
+                {
+                    label: "BMI distribution",
+                    fill: false,
+                    lineTension: 0.4,
+                    backgroundColor: "rgba(192,75,192,0.4)",
+                    borderColor: "rgba(192,75,192,1)",
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: "rgba(192,75,192,1)",
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(192,75,192,1)",
+                    pointHoverBorderColor: "rgba(220,220,220,1)",
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: result.values,
+                    spanGaps: false,
+                }
+            ]
+        },
+        options: {}
+      });
+    });
+  },
+
   drawSexDistribution: function(ctx){
     data.getSexDistribution(function(result){
       var myPieChart = new Chart(ctx,{

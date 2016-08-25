@@ -1,19 +1,31 @@
-var isDrawn=false;
+var isDrawn = false, isVisible = false;
 
 var side = {
 
   hide: function() {
-    $('#sidebar-wrapper').html("");
+    $('#sidebar-wrapper').hide(function(){
+      isVisible = false;
+    });
     $('#page-wrapper').removeClass("main-with-sidebar");
   },
 
   show: function() {
-    if(isDrawn) return;
-    var tmpl = require('../../templates/sidebar');
-    var html = tmpl();
+    if (isDrawn) {
+      $('#sidebar-wrapper').show(function(){
+        isVisible = true;
+      });
+    } else {
+      var tmpl = require('../../templates/sidebar');
+      var html = tmpl();
 
-    $('#sidebar-wrapper').html(html);
+      $('#sidebar-wrapper').html(html);
+
+      side.wireup();
+
+      isDrawn = true;
+    }
     $('#page-wrapper').addClass("main-with-sidebar");
+    setTimeout(side.highlight,0); //so that the change happens before the page renders
   },
 
   resize: function() {
@@ -35,49 +47,47 @@ var side = {
     $("#page-wrapper").css("padding-top", (topOffset) + "px");
   },
 
+  highlight: function(){
+    var url = window.location;
+    // var element = $('ul.nav a').filter(function() {
+    //     return this.href == url;
+    // }).addClass('active').parent().parent().addClass('in').parent();
+    $('ul.nav a').removeClass('active');
+    var element = $('ul.nav a').filter(function() {
+      return this.href == url;
+    }).addClass('active').parent();
+
+    while (true) {
+      if (element.is('li')) {
+        element = element.parent().addClass('in').parent();
+      } else {
+        break;
+      }
+    }
+  },
+
   wireup: function() {
     $(function() {
-      var url = window.location;
-      // var element = $('ul.nav a').filter(function() {
-      //     return this.href == url;
-      // }).addClass('active').parent().parent().addClass('in').parent();
-      $('ul.nav a').removeClass('active');
-      var element = $('ul.nav a').filter(function() {
-        return this.href == url;
-      }).addClass('active').parent();
 
-      while (true) {
-        if (element.is('li')) {
-          element = element.parent().addClass('in').parent();
-        } else {
-          break;
-        }
-      }
-    });
-
-    if(isDrawn) return;
-
-    $(function() {
-
-      $('#side-menu').metisMenu().on('click', 'a', function(){
+      $('#side-menu').metisMenu().on('click', 'a', function() {
         //$('.sidebar-nav').collapse('hide');
       });
 
-      $('.sidebar-nav').on('show.bs.collapse', function () {
+      $('.sidebar-nav').on('show.bs.collapse', function() {
         // do something…
-      }).on('shown.bs.collapse', function () {
+      }).on('shown.bs.collapse', function() {
         // do something…
         //side.resize.call(window);
         //$('#sidebar-wrapper').css('position','fixed');
-      }).on('hide.bs.collapse', function () {
+      }).on('hide.bs.collapse', function() {
         // do something…
-      }).on('hidden.bs.collapse', function () {
+      }).on('hidden.bs.collapse', function() {
         // do something…
         //$('#sidebar-wrapper').css('position','inherit');
         //side.resize.call(window);
       });
 
-      $('body').on('click', function(){
+      $('body').on('click', function() {
         $('.sidebar-nav').collapse('hide');
       });
 
@@ -91,7 +101,6 @@ var side = {
         side.resize.call(this);
       });
     });
-    isDrawn=true;
   }
 };
 

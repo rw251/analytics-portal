@@ -7,6 +7,7 @@ var home = {
     var tmpl = require('../templates/home');
     var html = tmpl();
     $('#page').html(html);
+    $('#toggle-button').addClass('home-screen');
 
     $('.navbar-brand').removeClass("selected");
     $('.navbar-brand[href*=home]').addClass("selected");
