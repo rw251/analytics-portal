@@ -7,5 +7,5 @@ The overview to go here
 Perhaps just a link to the document
 
 ##Documentation
-[Design specification](docs/design.md)
-[Technical specification](docs/tech.md)
+- [Design specification](docs/design.md)
+- [Technical specification](docs/tech.md)
