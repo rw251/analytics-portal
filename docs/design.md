@@ -2,20 +2,38 @@
 
 # Design Specification
 
-## Introduction
+## 1 Introduction
 
-### Overview
+### 1.1 Overview
 
 This document provides a complete overview of the design and functionality of the Mujo Industry Portal. It is based upon the use cases, user requirement specification, and collaboration with the Mujo team.
 
-### Related documents
+### 1.2 Related documents
 
 * The [Technical specification](tech.md) lays out precisely how the application will be built, tested and deployed.
 * The [User requirement specification]() provides the detail of what is required by the user.
 
-## Screens
+### 1.3 Structure
 
-### 1. Home page
+The full functionality of the web application is described in detail below screen by screen.
+
+For each screen there is:
+
+- A description providing a detailed overview of the screen's functionality
+- A graphical mock-up providing a visual alternative to the written description
+- Comments on how the application would look when displayed on smaller screens such as a tablet
+
+### 1.4 Responsive design
+
+The application is designed to work on laptops and desktops, but will also work on tablets
+
+### 1.5 Browser support
+
+It is expected that the web application will work on all modern browsers, however it will only be tested only be tested on Chrome, Firefox, Edge, IE9+ and Safari.
+
+## 2 Screens
+
+### 2.1 Home page
 
 #### Description
 
@@ -27,9 +45,15 @@ A future version may have the ability for users to log in. There would then be a
 
 #### Mock-up
 
-![](https://github.com/rw251/analytics-portal/blob/master/docs/img/1-Base - home.jpg)
+![Home screen image ](https://github.com/rw251/analytics-portal/blob/master/docs/img/1-Base - home.jpg)
 
-### 2. Dashboard overview
+#### Responsive design
+
+Below a certain screen size the name "Industry Portal" in the title bar will shrink to just "Portal".
+
+If there are multiple columns of text then they will collapse into a single column.
+
+### 2.2 Dashboard overview
 
 #### Description
 
@@ -52,19 +76,46 @@ There is then also the first few elements from the "top 10" and the "distributio
 
 #### Mock-up
 
-![](https://github.com/rw251/analytics-portal/blob/master/docs/img/2-Portal - overview.jpg)
+![Dashboard overview image](https://github.com/rw251/analytics-portal/blob/master/docs/img/2-Portal - overview.jpg)
 
-### 3. Top 10
+#### Responsive design
+
+The side bar will collapse below a certain screen size and be available via a menu button on the title bar. Upon clicking the menu button the side bar will appear and disappear on selection of an item.
+
+### 2.3 Top 10
 
 #### Description
+
+The user is presented with a variety of information in the form of "top 10" column charts.
+
+The current planned list of charts is:
+
+`TODO: This table is incomplete`
+
+| x-axis       | y-axis        |
+|--------------|---------------|
+| Location     | # of patients |
+| Prescription | # of patients |
+| Physio       | # of patients |
+| Occupation   | # of patients |
 
 #### Mock-up
 
-![](https://github.com/rw251/analytics-portal/blob/master/docs/img/3-Portal - top 10.jpg)
+![top 10 image](https://github.com/rw251/analytics-portal/blob/master/docs/img/3-Portal - top 10.jpg)
 
-### 4. Distributions
+#### Responsive design
+
+The number of columns will adapt depending on screen size from a maximum of 4 down to 1 for mobiles.
+
+### 2.4 Distributions
 
 #### Description
+
+The user is presented with distributions of key variables.
+
+The current proposal is for histograms for: age, BMI and usage per hour. Also a pie chart for sex.
+
+It is also possible for the user to alter the list of patients displayed in the distributions by adding a series of filters. Precisely what will be useful to filter on is largely dependent on the amount of data captured but it is envisioned that possible filters will include: age, sex, prescription and adherence.
 
 #### Mock-up
 
@@ -73,11 +124,25 @@ There is then also the first few elements from the "top 10" and the "distributio
 ![](https://github.com/rw251/analytics-portal/blob/master/docs/img/6-Portal - distributions - drop downs2.jpg)
 ![](https://github.com/rw251/analytics-portal/blob/master/docs/img/7-Portal - distributions - drop downs3.jpg)
 
-### 5. Predictive model
+#### Responsive design
+
+The number of columns will adapt depending on screen size from a maximum of 4 down to 1 for mobiles.
+
+### 2.5 Predictive model
 
 #### Description
+
+A predictive model will be developed to give indications about the factors that predict adherence and outcome.
+
+Any statistically significant factors will be displayed to the user together with the [p-value](https://en.wikipedia.org/wiki/P-value) (a measure of how significant the factor is).
+
+It will also be possible to specify a patient by one or more of: age, sex, occupation and diagnosis, in order that a probability of adherence and successful outcome can be displayed to the user.
 
 #### Mock-up
 
 ![](https://github.com/rw251/analytics-portal/blob/master/docs/img/8-Portal - model.jpg)
 ![](https://github.com/rw251/analytics-portal/blob/master/docs/img/9-Portal - model - 2.jpg)
+
+#### Responsive design
+
+The two column design from the mock-up would collapse to a single column below a certain screen size.
