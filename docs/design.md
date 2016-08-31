@@ -39,7 +39,7 @@ It is expected that the web application will work on all modern browsers, howeve
 
 The home page provides the landing page for when users arrive at the dashboard. It will contain high level text (to be provided by Mujo) explaining what the dashboard is and how it fits within the project.
 
-A title bar at the top of the screen provides access to the dashboard - as does a large button in the centre of the screen.
+A title bar at the top of the screen provides access to the dashboard - as does a large button in the centre of the screen. There are two options in the title bar: Home and Analtics Portal. The currently viewed page is underlined.
 
 A future version may have the ability for users to log in. There would then be a drop down menu in the top right showing who is logged in and allowing users to change/delete their profile and log out. However this will not be delivered as part of the current project.
 
@@ -65,6 +65,8 @@ A menu on the left hand side provides the four areas of the dashboard that are a
 * top 10
 * distributions
 * predictive model
+
+The side menu highlights the currently viewed section.
 
 The main body of the page displays a summary box giving the following information:
 
@@ -115,7 +117,7 @@ The user is presented with distributions of key variables.
 
 The current proposal is for histograms for: age, BMI and usage per hour. Also a pie chart for sex.
 
-It is also possible for the user to alter the list of patients displayed in the distributions by adding a series of filters. Precisely what will be useful to filter on is largely dependent on the amount of data captured but it is envisioned that possible filters will include: age, sex, prescription and adherence.
+It is also possible for the user to alter the list of patients displayed in the distributions by adding a series of filters. Precisely what will be useful to filter on is largely dependent on the amount of data captured but it is envisioned that possible filters will include: age, sex, prescription and adherence. `This is considered a nice-to-have feature and priority will be given to other features.`
 
 #### Mock-up
 
