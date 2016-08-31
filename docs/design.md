@@ -1,5 +1,8 @@
 #Design Specification
-Placeholder.
+
+##Introduction
+
+
 
 ##Images
 ![](https://github.com/rw251/analytics-portal/blob/master/docs/img/1-Base - home.jpg)
