@@ -1,16 +1,15 @@
 {
   "name": "industry-portal",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Mujo industry portal",
   "main": "index.js",
   "scripts": {
     "start": "brunch watch --server",
     "build": "brunch build --production",
     "test": "echo \"Error: no test specified\" && exit 1",
-
     "predeploy": "cd dist && git pull origin gh-pages",
     "deploy": "npm run build",
-    "postdeploy" :"cd dist && git add -A && git commit -m \"Latest version\" && git push origin gh-pages"
+    "postdeploy": "cd dist && git add -A && git commit -m \"Latest version\" && git push origin gh-pages"
   },
   "author": "Richard Williams",
   "license": "ISC",
