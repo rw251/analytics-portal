@@ -11,9 +11,9 @@
     "deploy": "npm run build",
     "postdeploy": "cd dist && git add -A && git commit -m \"Latest version\" && git push origin gh-pages",
     "postversion": "git push origin master && git push --tags",
-    "patch": "npm version patch",
-    "minor": "npm version minor",
-    "major": "npm version major"
+    "patch": "npm version patch -m \"Upgrade to %s\"",
+    "minor": "npm version minor -m \"Upgrade to %s\"",
+    "major": "npm version major -m \"Upgrade to %s\""
   },
   "author": "Richard Williams",
   "license": "ISC",
