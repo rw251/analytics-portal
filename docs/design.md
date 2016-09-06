@@ -35,6 +35,8 @@ It is expected that the web application will work on all modern browsers, howeve
 
 ### 2.1 Home page
 
+[Issue #2 - create homepage](https://github.com/rw251/analytics-portal/issues/2)
+
 #### Description
 
 The home page provides the landing page for when users arrive at the dashboard. It will contain high level text (to be provided by Mujo) explaining what the dashboard is and how it fits within the project.

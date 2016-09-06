@@ -6,7 +6,8 @@
   "scripts": {
     "start": "brunch watch --server",
     "build": "brunch build --production",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec",
+    "test-0.10": "node --harmony node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec",
     "predeploy": "cd dist && git pull origin gh-pages",
     "deploy": "npm run build",
     "postdeploy": "cd dist && git add -A && git commit -m \"Latest version\" && git push origin gh-pages",
@@ -20,8 +21,11 @@
   "devDependencies": {
     "auto-reload-brunch": "^2.7.1",
     "brunch": "^2.8.2",
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
     "jade-brunch": "^2.8.0",
     "javascript-brunch": "^2.0.0",
+    "mocha": "^3.0.2",
     "sass-brunch": "^2.6.3"
   },
   "dependencies": {
