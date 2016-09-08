@@ -14,7 +14,9 @@
     "postversion": "git push origin master && git push --tags",
     "patch": "npm version patch -m \"Upgrade to v%s\"",
     "minor": "npm version minor -m \"Upgrade to v%s\"",
-    "major": "npm version major -m \"Upgrade to v%s\""
+    "major": "npm version major -m \"Upgrade to v%s\"",
+    "docker": "docker-compose up -d && node db/recreate_database.js",
+    "docker:stop" : "docker-compose down"
   },
   "author": "Richard Williams",
   "license": "ISC",
@@ -29,6 +31,7 @@
     "sass-brunch": "^2.6.3"
   },
   "dependencies": {
-    "chart.js": "^2.2.1"
+    "chart.js": "^2.2.1",
+    "mysql": "^2.11.1"
   }
 }
