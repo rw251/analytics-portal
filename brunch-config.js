@@ -2,7 +2,7 @@ module.exports = {
   // See http://brunch.io for documentation.
   paths: {
     public: 'dist',
-    watched: ['app','vendor','server']
+    watched: ['app','vendor']
   },
 
   files: {
@@ -31,11 +31,11 @@ module.exports = {
     templates: {
       joinTo: 'app.js'
     }
-  },
+  }/*,
 
   server: {
     run: true,
     path: "server.js",
     port: 3000
-  }
+  }*/
 };
