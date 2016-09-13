@@ -29,7 +29,7 @@ The application is designed to work on laptops and desktops, but will also work 
 
 ### 1.5 Browser support
 
-It is expected that the web application will work on all modern browsers, however it will only be tested only be tested on Chrome, Firefox, Edge, IE9+ and Safari.
+It is expected that the web application will work on all modern browsers, however it will only be tested on Chrome, Firefox, Edge, IE9+ and Safari.
 
 ## 2 Screens
 
@@ -56,6 +56,8 @@ Below a certain screen size the name "Industry Portal" in the title bar will shr
 If there are multiple columns of text then they will collapse into a single column.
 
 ### 2.2 Dashboard overview
+
+[Issue #3 - create overview page](https://github.com/rw251/analytics-portal/issues/3)
 
 #### Description
 
@@ -88,6 +90,8 @@ The side bar will collapse below a certain screen size and be available via a me
 
 ### 2.3 Top 10
 
+[Issue #4 - create top 10 page](https://github.com/rw251/analytics-portal/issues/4)
+
 #### Description
 
 The user is presented with a variety of information in the form of "top 10" column charts.
@@ -113,6 +117,8 @@ The number of columns will adapt depending on screen size from a maximum of 4 do
 
 ### 2.4 Distributions
 
+[Issue #5 - create distribution page](https://github.com/rw251/analytics-portal/issues/5)
+
 #### Description
 
 The user is presented with distributions of key variables.
@@ -133,6 +139,8 @@ It is also possible for the user to alter the list of patients displayed in the 
 The number of columns will adapt depending on screen size from a maximum of 4 down to 1 for mobiles.
 
 ### 2.5 Predictive model
+
+[Issue #6 - create model page](https://github.com/rw251/analytics-portal/issues/6)
 
 #### Description
 
