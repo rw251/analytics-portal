@@ -18,7 +18,7 @@ var side = {
       var tmpl = require('../../templates/sidebar');
       var html = tmpl();
 
-      $('#sidebar-wrapper').html(html);
+      $('#sidebar-wrapper').html(html).show();
 
       side.wireup();
 
