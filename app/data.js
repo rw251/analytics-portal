@@ -1,21 +1,27 @@
 var data = {
 
   getAgeDistribution: function(callback) {
-    return callback({
-      labels: ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"],
-      values: [0, 0, 20, 35, 53, 55, 40, 37, 20, 2]
+    $.getJSON('/api/distribution/age', function(data){
+      return callback(data);
     });
   },
 
   getBMIDistribution: function(callback) {
-    return callback({
-      labels: ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44"],
-      values: [0, 0, 0, 27, 92, 57, 40, 37, 9]
+    $.getJSON('/api/distribution/bmi', function(data){
+      return callback(data);
+    });
+  },
+
+  getUsageHoursDistribution: function(callback) {
+    $.getJSON('/api/distribution/timeOfSession', function(data){
+      return callback(data);
     });
   },
 
   getSexDistribution: function(callback) {
-    return callback({ labels: ["Male", "Female"], values: [126, 173] });
+    $.getJSON('/api/distribution/sex', function(data){
+      return callback(data);
+    });
   },
 
   getTop10: function(callback) {

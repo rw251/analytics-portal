@@ -15,6 +15,9 @@
   .hide-if-super-small {
     display:none;
   }
+}
+
+@media (max-width: 768px) {
   .home-screen {
     display: none;
   }
