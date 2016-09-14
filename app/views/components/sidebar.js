@@ -20,6 +20,15 @@ var side = {
 
       $('#sidebar-wrapper').html(html).show();
 
+      var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+      if (width < 768) {
+        $('div.navbar-collapse').addClass('collapse');
+        //topOffset = $('#side-menu').height();
+      } /*else {
+        $('div.navbar-collapse').removeClass('collapse');
+      }*/
+      //
+
       side.wireup();
 
       isDrawn = true;
