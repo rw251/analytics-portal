@@ -6,14 +6,14 @@
     ul
       li 
         span Data updated on 
-        strong 25th August 2016
+        strong= new Date(updated).toUTCString()
       li
-        strong 625 
+        strong= count.allpatients + ' ' 
         span patients (of which 
-        strong 125 
+        strong= count.activepatients + ' ' 
         span active)
       li
-        span 6 locations, 13 physios, 25 unique diagnoses, 37 unique prescriptions
+        span= count.locations + ' locations, ' + count.physios + ' physios, ' + count.diagnoses + ' unique diagnoses, ' + count.prescriptions + ' unique prescriptions'
       li
         span More stuff
 .row

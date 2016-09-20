@@ -1,5 +1,13 @@
 var data = {
 
+  getSummary: function(callback) {
+    $.getJSON('/api/summary', function(data) {
+      return callback(data);
+    }).error(function() {
+      return callback({ "updated": "2016-09-09T08:50:56.000Z", "count": { "allpatients": 40, "activepatients": 0, "locations": 4, "physios": 18, "diagnoses": 6, "prescriptions": 38 }});
+    });
+  },
+
   getAgeDistribution: function(callback) {
     $.getJSON('/api/distribution/age', function(data) {
       return callback(data);

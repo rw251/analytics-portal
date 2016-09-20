@@ -1,28 +1,33 @@
 var sidebar = require('./components/sidebar.js'),
-  charts = require('../charts.js');
+  charts = require('../charts.js'),
+  data = require('../data.js');
 
 var portal = {
 
   show: function(){
 
-    var tmpl = require('../templates/overview');
-    var html = tmpl();
-    $('#page').html(html);
-    $('#toggle-button').removeClass('home-screen');
+    data.getSummary(function(summary){
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=portal]').addClass("selected");
+      var tmpl = require('../templates/overview');
+      var html = tmpl(summary);
+      $('#page').html(html);
+      $('#toggle-button').removeClass('home-screen');
 
-    [1,2,3].forEach(function(v){
-      charts.drawTop10Chart($('#chart'+v));
+      $('.navbar-brand').removeClass("selected");
+      $('.navbar-brand[href*=portal]').addClass("selected");
+
+      [1,2,3].forEach(function(v){
+        charts.drawTop10Chart($('#chart'+v));
+      });
+  
+      charts.drawAgeDistribution($('#chart4'));
+      charts.drawSexDistribution($('#chart5'));
+
+
+      sidebar.show();
+      //sidebar.wireup();
+
     });
-
-    charts.drawAgeDistribution($('#chart4'));
-    charts.drawSexDistribution($('#chart5'));
-
-
-    sidebar.show();
-    //sidebar.wireup();
 
   }
 

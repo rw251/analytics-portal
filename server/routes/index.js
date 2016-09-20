@@ -7,6 +7,13 @@ module.exports = function() {
 
   /* api */
 
+  router.get('/api/summary', function(req, res){
+    queries.summary.all(function(err, val){
+      if(err) throw err;
+      res.send(val);
+    });
+  });
+
   router.get('/api/get', function(req, res){
     test.get(function(err,val){
       if(err) throw err;
