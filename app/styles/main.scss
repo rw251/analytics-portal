@@ -34,8 +34,15 @@
     text-transform: uppercase;
 }
 
+@media (max-height: 524px) {
+  .splash {
+    top:20px;
+    margin-top:10px;
+  }
+}
+
 .splash form {
-  width:400px;
+  max-width:400px;
   text-align: center;
   margin:auto;
 }
