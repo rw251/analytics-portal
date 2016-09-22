@@ -1,0 +1,31 @@
+include ../partials/head.jade
+include ../partials/header.jade
+#wrapper
+  #sidebar-wrapper
+  #page-wrapper
+    #page
+      .splash-container
+        .splash
+          h1.splash-head MUJO INDUSTRY PORTAL
+          p.splash-subhead
+            | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          if message && message.error
+            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+              button.close(type="button" data-dismiss="alert" aria-label="Close")
+                span(aria-hidden="true") ×
+              p= message.error
+          form(action='/login', method='post')
+            .form-group.input-group
+              span.input-group-addon
+                i.fa.fa-envelope
+              input#inpEmail.form-control(type='text', name='username', placeholder='Email address', required='', autofocus='')
+            .form-group.input-group
+              span.input-group-addon
+                i.fa.fa-key
+              input.form-control.nomargin(type='password', name='password', placeholder='Password', required='')
+            //.form-group
+              //a.small(href='/reset') Forgot password
+            button#signin.btn.btn-success.btn-block.history(type='submit')
+              // href="#overview">
+              | Sign in
+              span.fa.fa-arrow-circle-right

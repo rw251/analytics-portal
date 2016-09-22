@@ -6,6 +6,9 @@ var bodyParser = require('body-parser');
 
 var config = require('./server/config.js');
 var db = require('./server/db/db.js');
+var mongoose = require('mongoose');
+mongoose.set('debug', true);
+mongoose.connect(config.mongo.url);
 
 db.connect(function(err) {
   if (err) {
@@ -33,13 +36,27 @@ module.exports = function(PORT, PATH, CALLBACK) {
     extended: false
   }));
 
+  // Configuring Passport
+  var passport = require('passport');
+  var expressSession = require('express-session');
+  app.use(expressSession({
+    secret: config.passport.secret,
+    resave: false,
+    saveUninitialized: false
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // Using the flash middleware provided by connect-flash to store messages in session
   // and displaying in templates
   var flash = require('connect-flash');
   app.use(flash());
 
-  var routes = require('./server/routes/index')();
+  // Initialize Passport
+  var initPassport = require('./server/passport/init');
+  initPassport(passport);
+
+  var routes = require('./server/routes/index')(passport);
   app.use('/', routes);
 
   app.use(express.static(path.join(__dirname, PATH)));
