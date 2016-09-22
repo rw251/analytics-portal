@@ -1,6 +1,5 @@
 node_modules
 dist
 coverage
-server/config.js
 db/datafrommujo
 docker-compose.yml
