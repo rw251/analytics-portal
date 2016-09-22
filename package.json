@@ -9,7 +9,7 @@
     "postinstall": "npm run build",
     "watch": "brunch watch",
     "predebug": "echo In one window launch brunch without server: npm run watch",
-    "debug": "echo Then in second window launch server with debug: node-debug app.js",
+    "debug": "echo Then in second window launch server with debug: node-debug server.js",
     "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec",
     "test-0.10": "node --harmony node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec",
     "predeploy": "cd dist && git pull origin gh-pages",

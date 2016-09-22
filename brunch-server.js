@@ -13,14 +13,22 @@ module.exports = function(PORT, PATH, CALLBACK) {
   mongoose.set('debug', true);
   mongoose.connect(config.mongo.url);
 
-  db.connect(function(err) {
-    if (err) {
-      console.log('Unable to connect to MySQL.');
-      process.exit(1);
-    } else {
-      console.log('MySQL connection established');
-    }
-  });
+  if (config.mysql.host) {
+    db.connect(function(err) {
+      if (err) {
+        console.log('Unable to connect to MySQL.');
+        process.exit(1);
+      } else {
+        console.log('MySQL connection established');
+      }
+    });
+  } else {
+    db.fakeDB(function() {
+      console.log('Spoofed MySQL connection established');
+    });
+  }
+
+
 
   var app = express();
 

@@ -11,6 +11,19 @@ exports.connect = function(done) {
   done();
 };
 
+exports.fakeDB = function(done) {
+  state.pool = {
+
+    query: function(sql, callback){
+      console.log(sql);
+      return callback(new Error("NODB"));
+    }
+
+  };
+
+  done();
+};
+
 exports.get = function() {
   return state.pool;
 };

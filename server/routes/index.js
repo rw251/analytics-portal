@@ -96,7 +96,7 @@ module.exports = function(passport) {
   /* api */
   router.get('/api/summary', isAuthenticated, function(req, res){
     queries.summary.all(function(err, val){
-      if(err) throw err;
+      //if(err) throw err;
       res.send(val);
     });
   });
