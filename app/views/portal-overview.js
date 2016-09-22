@@ -16,12 +16,12 @@ var portal = {
       $('.navbar-brand').removeClass("selected");
       $('.navbar-brand[href*=portal]').addClass("selected");
 
-      [1,2,3].forEach(function(v){
-        charts.drawTop10Chart($('#chart'+v));
+      ["physios","prescriptions"].forEach(function(v,i){
+        charts.drawTop10Chart(v,$('#chartTop'+i));
       });
-  
-      charts.drawAgeDistribution($('#chart4'));
-      charts.drawSexDistribution($('#chart5'));
+
+      charts.drawAgeDistribution($('#chartDist0'));
+      charts.drawSexDistribution($('#chartDist1'));
 
 
       sidebar.show();

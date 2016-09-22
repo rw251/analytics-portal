@@ -40,7 +40,23 @@ var data = {
     });
   },
 
-  getTop10: function(callback) {
+  getTop10Categories: function(callback) {
+    $.getJSON('/api/top10', function(data) {
+      return callback(data);
+    }).error(function() {
+      return callback([ "physios", "prescriptions", "diagnoses", "locations"]);
+    });
+  },
+
+  getTop10: function(category, callback){
+    $.getJSON('/api/top10/'+category, function(data) {
+      return callback(data);
+    }).error(function() {
+      data.getTop10FAKE(callback);
+    });
+  },
+
+  getTop10FAKE: function(callback) {
     var min = Math.random() * 20;
     var range = Math.random() * 50;
     var dt = [];

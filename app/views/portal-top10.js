@@ -1,24 +1,29 @@
 var sidebar = require('./components/sidebar.js'),
-  charts = require('../charts.js');
+  charts = require('../charts.js'),
+  data = require('../data.js');
 
 var portal = {
 
   show: function(){
 
-    var tmpl = require('../templates/top10');
-    var html = tmpl();
-    $('#page').html(html);
-    $('#toggle-button').removeClass('home-screen');
+    data.getTop10Categories(function(cats){
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=portal]').addClass("selected");
+      var tmpl = require('../templates/top10');
+      var html = tmpl({n: cats.length});
+      $('#page').html(html);
+      $('#toggle-button').removeClass('home-screen');
 
-    [1,2,3,4,5,6,7,8,9,10,11,12].forEach(function(v){
-      charts.drawTop10Chart($('#chart'+v));
+      $('.navbar-brand').removeClass("selected");
+      $('.navbar-brand[href*=portal]').addClass("selected");
+
+      cats.forEach(function(v,idx){
+        charts.drawTop10Chart(v,$('#chart'+idx));
+      });
+
+      sidebar.show();
+      //sidebar.wireup();
+
     });
-
-    sidebar.show();
-    //sidebar.wireup();
 
   }
 

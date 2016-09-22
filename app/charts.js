@@ -201,35 +201,36 @@ var chts = {
 
   },
 
-  drawTop10Chart: function(ctx) {
-    data.getTop10(function(result) {
+  colours: ["rgba(166,206,227,x)", "rgba(31,120,180,x)", "rgba(178,223,138,x)", "rgba(51,160,44,x)", "rgba(251,154,153,x)", "rgba(227,26,28,x)", "rgba(253,191,111,x)", "rgba(255,127,0,x)", "rgba(202,178,214,x)", "rgba(106,61,154,x)"],
+
+  drawTop10Chart: function(category, ctx) {
+    data.getTop10(category, function(result) {
       var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: result.labels,
-          datasets: [{
+          labels: ["Top 10"], //result.data.map(function(v) { return v.name; }),
+          datasets: result.data.map(function(v,i) {
+            return {
+              label: v.name,
+              data: [v.value],
+              backgroundColor: [chts.colours[i].replace(/x/,"0.7")],
+              borderColor: [chts.colours[i].replace(/x/,"1")],
+              borderWidth: 1
+            };
+          })
+
+          /*datasets: [{
             label: 'Top 10...',
-            data: result.values,
-            backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-            borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
+            data: result.data.map(function(v) { return v.value; }),
+            backgroundColor: ["rgba(166,206,227,0.7)", "rgba(31,120,180,0.7)", "rgba(178,223,138,0.7)", "rgba(51,160,44,0.7)", "rgba(251,154,153,0.7)", "rgba(227,26,28,0.7)", "rgba(253,191,111,0.7)", "rgba(255,127,0,0.7)", "rgba(202,178,214,0.7)", "rgba(106,61,154,0.7)"],
+            borderColor: ["rgba(166,206,227,1)", "rgba(31,120,180,1)", "rgba(178,223,138,1)", "rgba(51,160,44,1)", "rgba(251,154,153,1)", "rgba(227,26,28,1)", "rgba(253,191,111,1)", "rgba(255,127,0,1)", "rgba(202,178,214,1)", "rgba(106,61,154,1)"],
             borderWidth: 1
-            }]
+          }]*/
         },
         options: {
+          legend: {
+            display: true
+          },
           scales: {
             yAxes: [{
               ticks: {
