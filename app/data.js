@@ -60,17 +60,18 @@ var data = {
     var min = Math.random() * 20;
     var range = Math.random() * 50;
     var dt = [];
+    var labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
     var n = 10;
     while (n > 0) {
-      dt.push(min + Math.random() * range);
+      dt.push({value: min + Math.random() * range, name: labels[10-n]});
       n--;
     }
     dt.sort(function(a, b) {
-      return b - a;
+      return b.value - a.value;
     });
     return callback({
-      labels: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-      values: dt
+      title: "Top 10...",
+      data:dt
     });
   }
 
