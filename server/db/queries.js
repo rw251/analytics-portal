@@ -116,6 +116,13 @@ var query = {
     });
   },
 
+  sites: function(done) {
+    db.get().query('SELECT id, name FROM site', function(err, rows) {
+      if (err) return done(err);
+      done(null, rows);
+    });
+  },
+
   top10: {
 
     physios: function(done) {

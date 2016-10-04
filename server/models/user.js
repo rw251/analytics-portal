@@ -19,7 +19,8 @@ var UserSchema = new Schema({
     type: String,
     required: true
   },
-  roles:[String]
+  roles:[String],
+  sites:[{ id : String, name : String }]
 });
 
 UserSchema.pre('save', function(next) {

@@ -1,15 +1,25 @@
 include ../partials/head.jade
-a.btn.btn-info(href='/admin') Back to user list
-form(action='/edit/'+user.email, method='post')
-  label(for='fullname') Full name:
-  input.form-control(type='text', name='fullname', placeholder='Full name', required='', autofocus='', value=user.fullname)
-  label(for='email') Email:
-  input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='', value=user.email)
-  .form-group
-    label.cr-styled
-      input(name='isAdmin', type='checkbox', checked=user.roles.indexOf('admin')>-1 ? 'checked' : undefined)
-      i.fa
-    |               Is Admin
-  button.btn.btn-purple.btn-block.history(type='submit')
-    | Update
-    span.fa.fa-arrow-circle-right
+.container-narrow.starter-template-high
+  a.btn.btn-info(href='/admin') Back to user list
+  form(action='/edit/'+user.email, method='post')
+    label(for='fullname') Full name:
+    input.form-control(type='text', name='fullname', placeholder='Full name', required='', autofocus='', value=user.fullname)
+    label(for='email') Email:
+    input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='', value=user.email)
+    .form-group.input-group
+      span.input-group-addon
+        i.fa.fa-stethoscope
+      select.form-control(name='sites', multiple='')
+        each site in sites
+          option(value=site.id+"|"+site.name,selected=(user.sites.map(function(v){return +v.id;}).indexOf(site.id) > -1))= site.name
+          //
+    .form-group
+      label.cr-styled
+        input(name='isAdmin', type='checkbox', checked=user.roles.indexOf('admin')>-1 ? 'checked' : undefined)
+        i.fa
+      |               Is Admin
+    button.btn.btn-purple.btn-block.history(type='submit')
+      | Update
+      span.fa.fa-arrow-circle-right
+    - if(message && message.error)
+      div.alert.alert-danger(role="alert")= message.error
