@@ -2,4 +2,34 @@
   // Navigation
   .navbar-header
     a.navbar-brand.selected(href='#home') Home
+    a.navbar-brand(href='#portal')
+      span.hide-if-super-small Analytics
+      | Portal
   nav(role='navigation', style='margin-bottom: 0')
+    ul.nav.navbar-top-links.navbar-right
+      li.dropdown
+        a.dropdown-toggle(data-toggle='dropdown', href='#')
+          = fullname + " "
+          i.fa.fa-user.fa-fw
+          i.fa.fa-caret-down
+        ul.dropdown-menu.dropdown-user
+          - if(admin)
+            li
+              a(href='admin')
+                i.fa.fa-user.fa-fw
+                |  User management
+            li.divider
+          li
+            a(href='changepassword')
+              i.fa.fa-key.fa-fw
+              |  Change password
+          li.divider
+          li
+            a(href='signout')
+              i.fa.fa-sign-out.fa-fw
+              |  Logout
+    button#toggle-button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+      span.sr-only Toggle navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar

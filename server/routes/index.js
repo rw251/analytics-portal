@@ -154,6 +154,10 @@ module.exports = function(passport) {
     });
   });
 
+  router.get('/', isAuthenticated, function(req, res, next){
+    res.render('pages/index.jade', { admin: req.user.roles.indexOf("admin") > -1, fullname: req.user.fullname });
+  });
+
   /* Ensure all html/js resources are only accessible if authenticated */
   router.get(/^\/(.*html|.*js|)$/, isAuthenticated, function(req, res, next) {
     next();

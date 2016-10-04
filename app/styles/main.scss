@@ -11,6 +11,14 @@
     position: fixed !important;
 }
 
+.navbar-top-links .dropdown-menu li.hideUnlessAdmin {
+  display:none;
+}
+
+.navbar-top-links .dropdown-menu li.hideUnlessAdmin.admin {
+  display: block;
+}
+
 @media (max-width: 380px) {
   .hide-if-super-small {
     display:none;
