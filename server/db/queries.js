@@ -119,7 +119,7 @@ var query = {
   sites: function(done) {
     db.get().query('SELECT id, name FROM site', function(err, rows) {
       if (err) {
-        if(err.message==="NODB") return done(null, [{id:1,name:"Site A"},{id:2,name:"Site B"},{id:3,name:"Site C"},{id:4,name:"Site A"}]);
+        if(err.message==="NODB") return done(null, [{id:1,name:"Site A"},{id:2,name:"Site B"},{id:3,name:"Site C"},{id:4,name:"Site D"}]);
         return done(err);
       }
       done(null, rows);
