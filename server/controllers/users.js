@@ -48,6 +48,9 @@ module.exports = {
 
         var roles = [];
         if (req.body.isAdmin) roles.push("admin");
+        if (req.body.isOperator) roles.push("operator");
+        if (req.body.isProvider) roles.push("provider");
+        if (req.body.isPayor) roles.push("payor");
         var originalUser = user;
 
         if (email === req.body.email) {
@@ -125,6 +128,9 @@ module.exports = {
         // create the user
         var roles = [];
         if (req.body.isAdmin) roles.push("admin");
+        if (req.body.isOperator) roles.push("operator");
+        if (req.body.isProvider) roles.push("provider");
+        if (req.body.isPayor) roles.push("payor");
         var newUser = new User({
           email: req.body.email,
           password: req.body.password,

@@ -3,29 +3,50 @@ include ../partials/head.jade
   .btn-toolbar
     a.btn.btn-info(href='/admin') Back to user list
   form(action='/adduser', method='post')
-    .form-group.input-group
-      span.input-group-addon
-        i.fa.fa-envelope
-      input.form-control(type='text', name='fullname', placeholder='Full name', required='', autofocus='')
-    .form-group.input-group
-      span.input-group-addon
-        i.fa.fa-envelope
-      input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='')
-    .form-group.input-group
-      span.input-group-addon
-        i.fa.fa-key
-      input.form-control.nomargin(type='password', name='password', placeholder='Password', required='')
-    .form-group.input-group
-      span.input-group-addon
-        i.fa.fa-stethoscope
-      select.form-control(name='sites', multiple='')
-        each site in sites
-          option(value=site.id+"|"+site.name)= site.name
-    .form-group
-      label.cr-styled
-        input(name='isAdmin', type='checkbox')
-        i.fa
-      |               Is Admin
+    fieldset
+      legend User details
+      .form-group.input-group
+        span.input-group-addon
+          i.fa.fa-user
+        input.form-control(type='text', name='fullname', placeholder='Full name', required='', autofocus='')
+      .form-group.input-group
+        span.input-group-addon
+          i.fa.fa-envelope
+        input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='')
+      .form-group.input-group
+        span.input-group-addon
+          i.fa.fa-key
+        input.form-control.nomargin(type='password', name='password', placeholder='Password', required='')
+    fieldset
+      legend Sites
+      .form-group.input-group
+        span.input-group-addon
+          i.fa.fa-stethoscope
+        select.form-control(name='sites', multiple='')
+          each site in sites
+            option(value=site.id+"|"+site.name)= site.name
+    fieldset
+      legend Roles
+      .form-group
+        label.cr-styled
+          input(name='isAdmin', type='checkbox')
+          i.fa
+        |               Admin (can create, edit and delete user accounts)
+      .form-group
+        label.cr-styled
+          input(name='isOperator', type='checkbox')
+          i.fa
+        |               Operator (physios etc. Summary info restricted to their user id)
+      .form-group
+        label.cr-styled
+          input(name='isProvider', type='checkbox')
+          i.fa
+        |               Provider (clinics, prime vendors etc. Most information restricted to their site or sites)
+      .form-group
+        label.cr-styled
+          input(name='isPayor', type='checkbox')
+          i.fa
+        |               Payor (ccg, insurance etc. Most information restricted to their site or sites)
     button.btn.btn-purple.btn-block.history(type='submit')
       | Create
       span.fa.fa-arrow-circle-right
