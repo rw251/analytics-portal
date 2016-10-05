@@ -114,7 +114,7 @@ module.exports = function(passport) {
 
   /* api */
   router.get('/api/summary', isAuthenticated, function(req, res) {
-    queries.summary.all(function(err, val) {
+    queries.summary.all(req.user, function(err, val) {
       //if(err) throw err;
       res.send(val);
     });
@@ -134,8 +134,14 @@ module.exports = function(passport) {
     res.send(Object.keys(queries.distribution));
   });
 
+  router.get('/api/test/:method', isAuthenticated, function(req,res){
+    queries.test(req.user, req.params.method, function(err, val){
+      res.send(val);
+    });
+  });
+
   router.get('/api/distribution/:category', isAuthenticated, function(req, res) {
-    queries.distribution[req.params.category](function(err, val) {
+    queries.distribution[req.params.category](req.user, function(err, val) {
       res.send(val);
     });
   });

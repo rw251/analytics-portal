@@ -20,7 +20,8 @@
     "minor": "npm version minor -m \"Upgrade to v%s\"",
     "major": "npm version major -m \"Upgrade to v%s\"",
     "docker": "docker-compose up -d && node db/recreate_database.js",
-    "docker:stop": "docker-compose down"
+    "docker:stop": "docker-compose down",
+    "docker:bash": "docker exec -it industryportal_mysql_1 bash"
   },
   "author": "Richard Williams",
   "license": "ISC",

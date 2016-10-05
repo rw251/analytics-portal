@@ -3,7 +3,8 @@ var data = {
   getSummary: function(callback) {
     $.getJSON('/api/summary', function(data) {
       return callback(data);
-    }).error(function() {
+    }).error(function(err) {
+      console.log(err);
       return callback({ "updated": "2016-09-09T08:50:56.000Z", "count": { "allpatients": 40, "activepatients": 0, "locations": 4, "physios": 18, "diagnoses": 6, "prescriptions": 38 }});
     });
   },

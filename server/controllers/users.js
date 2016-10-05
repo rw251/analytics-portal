@@ -47,10 +47,11 @@ module.exports = {
       } else {
 
         var roles = [];
-        if (req.body.isAdmin) roles.push("admin");
-        if (req.body.isOperator) roles.push("operator");
+        if (req.body.isMujo) roles.push("mujo");
         if (req.body.isProvider) roles.push("provider");
         if (req.body.isPayor) roles.push("payor");
+        if (req.body.isOperator) roles.push("operator");
+        if (req.body.isAdmin) roles.push("admin");
         var originalUser = user;
 
         if (email === req.body.email) {
@@ -64,6 +65,8 @@ module.exports = {
               var els = v.split("|");
               return { id: els[0], name: els[1] };
             });
+          } else {
+            user.sites=[];
           }
           // save the user
           user.save(function(err) {
@@ -93,6 +96,8 @@ module.exports = {
                   var els = v.split("|");
                   return { id: els[0], name: els[1] };
                 });
+              } else {
+                user.sites=[];
               }
               // save the user
               originalUser.save(function(err) {
@@ -127,10 +132,11 @@ module.exports = {
         // if there is no user with that email
         // create the user
         var roles = [];
-        if (req.body.isAdmin) roles.push("admin");
-        if (req.body.isOperator) roles.push("operator");
+        if (req.body.isMujo) roles.push("mujo");
         if (req.body.isProvider) roles.push("provider");
         if (req.body.isPayor) roles.push("payor");
+        if (req.body.isOperator) roles.push("operator");
+        if (req.body.isAdmin) roles.push("admin");
         var newUser = new User({
           email: req.body.email,
           password: req.body.password,
@@ -144,6 +150,8 @@ module.exports = {
             var els = v.split("|");
             return { id: els[0], name: els[1] };
           });
+        } else {
+          user.sites=[];
         }
 
         // save the user

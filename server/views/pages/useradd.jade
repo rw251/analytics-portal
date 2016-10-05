@@ -34,6 +34,11 @@ include ../partials/head.jade
         |               Admin (can create, edit and delete user accounts)
       .form-group
         label.cr-styled
+          input(name='isMujo', type='checkbox')
+          i.fa
+        |               Mujo (can see everything)
+      .form-group
+        label.cr-styled
           input(name='isOperator', type='checkbox')
           i.fa
         |               Operator (physios etc. Summary info restricted to their user id)

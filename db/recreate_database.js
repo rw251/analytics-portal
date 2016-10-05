@@ -1,7 +1,7 @@
 // use npm run docker to start this
 
 var mysql = require('mysql'),
-  config = require('../server/config.js'),
+  config = require('../server/config.js').mysql,
   db = config.database,
   fs = require('fs'),
   path = require('path'),
@@ -12,6 +12,9 @@ var mysql = require('mysql'),
 var createSQL = [
   fs.readFileSync(schemaFile).toString(),
   fs.readFileSync(dataFile).toString(),
+  "UPDATE patient_info_copy SET outcome = 'asjf8asj0f9as8d fsoadifj io j[OUTCOME]2016-05-21|4[/OUTCOME] al;fj asl;dfj sss' WHERE userId = 37;",
+  "UPDATE patient_info_copy SET outcome = ' Bla asdfj lkdj [OUTCOME]2016-04-12|1[/OUTCOME]dsfd sfd' WHERE userId = 17;",
+  "UPDATE patient_info_copy SET outcome = ' Bla asdfj lkdj [OUTCOME]2016-04-16|1[/OUTCOME]dsfd sfd' WHERE userId = 19;"
 ].join("\n");
 
 //It might not exist so can't connect without error
@@ -23,6 +26,7 @@ var test = function(conn, callback){
 
   conn.connect(function(err){
     if(err) {
+      console.log(err);
       console.log('no connection - try again in 5s');
       setTimeout(function(){
         test(mysql.createConnection(config), callback);
@@ -74,7 +78,7 @@ var main = function(){
   });
 
 };
-
+console.log(config);
 test(mysql.createConnection(config), function(){
   main();
 });
