@@ -99,6 +99,8 @@ There is then also the first few elements from the "top 10" and the "distributio
 
 The side bar will collapse below a certain screen size and be available via a menu button on the title bar. Upon clicking the menu button the side bar will appear and disappear on selection of an item.
 
+![Responsive design menu image](https://github.com/rw251/analytics-portal/blob/master/docs/img/responsivemenu.png)
+
 ### 2.3 Top 10
 
 [Issue #4 - create top 10 page](https://github.com/rw251/analytics-portal/issues/4)
@@ -143,7 +145,7 @@ The number of columns will adapt depending on screen size from a maximum of ~~4~
 
 #### Description
 
-**The user is presented with a heat map showing the location of patients, together with markers showing the list of sites.**
+**The user is presented with a heat map showing the location of patients, together with markers showing the list of sites.  Hovering over a marker gives the name of the Mujo site. Clicking a marker gives additional information in an info box.**
 
 #### Mock-up
 
@@ -216,6 +218,9 @@ The two column design from the mock-up would collapse to a single column below a
 * **User management (Only visible to admin users)**
 * **Change password**
 * **Log out**
+
+![user menu image](https://github.com/rw251/analytics-portal/blob/master/docs/img/usermenu.png)
+
 
 ### 3.3 User management pages
 
