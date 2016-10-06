@@ -53,8 +53,6 @@ The home page provides the landing page for when users arrive at the dashboard. 
 
 ![Home screen image ](https://github.com/rw251/analytics-portal/blob/master/docs/img/login.png)
 
-**In addition a login form will be presented in the centre of the screen.**
-
 #### Responsive design
 
 ~~Below a certain screen size the name "Industry Portal" in the title bar will shrink to just "Portal".~~
@@ -96,11 +94,6 @@ There is then also the first few elements from the "top 10" and the "distributio
 #### Mock-up
 
 ![Dashboard overview image](https://github.com/rw251/analytics-portal/blob/master/docs/img/overview.png)
-
-**Not shown in the mockup:**
-
-* **Additional summary information**
-* **The locations tab**
 
 #### Responsive design
 
