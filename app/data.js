@@ -14,7 +14,7 @@ var data = {
       return callback(data);
     }).error(function(err) {
       console.log(err);
-      return callback({ "updated": "2016-09-09T08:50:56.000Z", "count": { "allpatients": 40, "activepatients": 0, "locations": 4, "physios": 18, "diagnoses": 6, "prescriptions": 38 }});
+      return callback({"count":{"allpatients":"120","activepatients":"65","dischargedpatients":{"discharged with improvement":27,"discharged without improvement":11,"referred for surgery":12,"failure":5},"locations":"4","physios":"18","diagnoses":"6"},"diagnostic":{"age":"59.4595","occupation":"35.1351","diagnoses":"35.1351"},"updated":"2016-08-01T08:50:56.000Z"});
     });
   },
 
