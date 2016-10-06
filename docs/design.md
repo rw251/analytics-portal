@@ -121,6 +121,7 @@ The current planned list of charts is:
 | **Device**               | **Avg session time**   |
 | **Device**               | **Bearing life**       |
 | **Device**               | **Cable life**         |
+| **Device**               | **Load factor**        |
 | **Failure reason**       | **# of patients**      |
 
 **The user can toggle between a table and a bar chart. In table mode they can request to see all categories rather than just the top 10.**
@@ -160,7 +161,7 @@ The number of columns will adapt depending on screen size from a maximum of ~~4~
 
 The user is presented with distributions of key variables.
 
-The current proposal is for histograms for: age, BMI and usage per hour. Also a pie chart for sex.
+The current proposal is for histograms for: age, BMI, ~~and~ usage per hour**, and prescribed exercise frequency**. Also a pie chart for sex.
 
 It is also possible for the user to alter the list of patients displayed in the distributions by adding a series of filters. Precisely what will be useful to filter on is largely dependent on the amount of data captured but it is envisioned that possible filters will include: age, sex, prescription and adherence. `This is considered a nice-to-have feature and priority will be given to other features.`
 
@@ -195,3 +196,32 @@ It will also be possible to specify a patient by one or more of: age, sex, occup
 #### Responsive design
 
 The two column design from the mock-up would collapse to a single column below a certain screen size.
+
+## 3 User management
+
+### 3.1 Overview
+
+**All users are authenticated via a login form. Each user can be assigned to 0, 1 or many device locations. Each user can have 1 or more roles. The current behaviour for the roles is as follows:**
+
+* **admin - this user has the ability to create, edit and delete other users**
+* **mujo - this user can see all parts of the site and no filtering is applied**
+* **operator - for physios: some summary information is hidden / the location page is hidden / where sensible information is filtered to just their patients**
+* **provider - for clinics, vendors etc: some summary information is hidden / where sensible information is filtered to just their site or sites**
+* **payor - for CCGs, insurance etc: some summary information is hidden / where sensible information is filtered to just their site or sites**
+
+### 3.2 User menu
+
+**Once logged in a drop down menu in the top right of the navigation bar will be visible. This will give the following options:**
+
+* **User management (Only visible to admin users)**
+* **Change password**
+* **Log out**
+
+### 3.3 User management pages
+
+**Admin users can create, edit and delete user accounts. There will be four screens for this purpose:**
+
+* **List - a list of all users currently registered with the system together with their assigned sites and roles**
+* **Add - users can be added to the system with the following information: full name, email address, password, assigned roles and assigned sites**
+* **Edit - the information provided in the "add" screen can be edited here**
+* **Delete - user accounts can be deleted**
