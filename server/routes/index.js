@@ -5,6 +5,7 @@ var rp = require('../passport/reset-password');
 var test = require('../models/test.js');
 var queries = require('../db/queries.js');
 var users = require('../controllers/users.js');
+var permissions = require('../db/permissions.js');
 
 var isAuthenticated = function(req, res, next) {
   // if user is authenticated in the session, call the next() to call the next request handler
@@ -113,9 +114,19 @@ module.exports = function(passport) {
   });
 
   /* api */
+  router.get('/api/sidebar', isAuthenticated, function(req, res){
+    res.send(permissions.sidebar.roles[req.user.roles[0]]);
+  });
+
   router.get('/api/summary', isAuthenticated, function(req, res) {
     queries.summary.all(req.user, function(err, val) {
       //if(err) throw err;
+      res.send(val);
+    });
+  });
+
+  router.get('/api/locations', isAuthenticated, function(req,res){
+    queries.locations.all(req.user, function(err,val){
       res.send(val);
     });
   });

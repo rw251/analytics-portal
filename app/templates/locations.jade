@@ -1,0 +1,53 @@
+.row
+  .col-lg-12
+    h1.page-header Locations
+.row
+  .col-lg-12
+    #map
+script.
+  var map, heatmap;
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 10,
+    center: {lat: 51.536739	, lng: -0.139484}
+    });
+    
+    heatmap = new google.maps.visualization.HeatmapLayer({
+    data: [!{people.map(function(v){return "new google.maps.LatLng(" + v.lat +","+ v.lng +")"}).join(",")}],
+    map: map
+  }); 
+  var contentString = function(name) { return '<div id="content">'+
+  '<div id="siteNotice">'+
+  '</div>'+
+  '<h1 id="firstHeading" class="firstHeading">' + name + '</h1>'+
+  '<div id="bodyContent">'+
+  '<p><b>' + name + '</b>, maybe some additional information...</p>'+
+  '<p> <a target="_blank" href="https://google.co.uk/search?q='+name+'">'+
+  'Link</a> '+
+  '</div>'+
+  '</div>';
+  };
+
+  var getInfoWindow = function(name){
+  var infowindow = new google.maps.InfoWindow({
+  content: contentString(name)
+  });
+  return infowindow;
+  }  
+
+  var locations = !{JSON.stringify(sites)};
+  
+  locations.forEach(function(v){
+  var marker = new google.maps.Marker({
+  position: v.pos,
+  map: map,
+  title: v.name
+  });
+  marker.addListener('click', function() {
+  getInfoWindow(v.name).open(map, marker);
+  });
+  });
+  }
+  if (typeof google === 'object' && typeof google.maps === 'object') initMap()
+- if (!google || !google.maps)
+  script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCc9AZSyLXrJa_WLAM5tlupmgPWqFVFjyQ&libraries=visualization&callback=initMap', async='', defer='')

@@ -1,5 +1,14 @@
 var data = {
 
+  getSidebar: function(callback){
+    $.getJSON('/api/sidebar', function(data) {
+      return callback(data);
+    }).error(function(err) {
+      console.log(err);
+      return callback(["top10","distributions","model"]);
+    });
+  },
+
   getSummary: function(callback) {
     $.getJSON('/api/summary', function(data) {
       return callback(data);
@@ -35,6 +44,14 @@ var data = {
 
   getSexDistribution: function(callback) {
     $.getJSON('/api/distribution/sex', function(data) {
+      return callback(data);
+    }).error(function() {
+      return callback({ "title": "Sex distribution", "data": [{ "label": "Male", "value": 12 }, { "label": "Female", "value": 17 }] });
+    });
+  },
+
+  getLocations: function(callback) {
+    $.getJSON('/api/locations', function(data) {
       return callback(data);
     }).error(function() {
       return callback({ "title": "Sex distribution", "data": [{ "label": "Male", "value": 12 }, { "label": "Female", "value": 17 }] });

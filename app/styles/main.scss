@@ -11,30 +11,52 @@
     position: fixed !important;
 }
 
+#map {
+    height: 50vh;
+    width: 100%;
+    max-width: 800px;
+}
+
 .navbar-top-links .dropdown-menu li.hideUnlessAdmin {
-  display:none;
+    display: none;
 }
 
 .navbar-top-links .dropdown-menu li.hideUnlessAdmin.admin {
-  display: block;
-}
-
-@media (max-width: 380px) {
-  .hide-if-super-small {
-    display:none;
-  }
+    display: block;
 }
 
 @media (max-width: 768px) {
-  .home-screen {
-    display: none;
-  }
+    .home-screen {
+        display: none;
+    }
+
+    #map {
+        height: 60vh;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hide-if-bit-small {
+        display: none;
+    }
+}
+
+@media (max-width: 380px) {
+    .hide-if-bit-small,
+    .hide-if-super-small {
+        display: none;
+    }
+
+    #map {
+        height: 60vh;
+    }
 }
 
 .container-narrow {
-  max-width: 600px;
-  margin-left: auto;
-  margin-right:auto;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .starter-template-high {
@@ -47,40 +69,37 @@
     height: 50%;
     margin: auto;
     position: absolute;
-    top: 100px; left: 0; bottom: 0; right: 0;
+    top: 100px;
+    left: 0;
+    bottom: 0;
+    right: 0;
     text-align: center;
     text-transform: uppercase;
 }
-
 @media (max-height: 524px) {
-  .splash {
-    top:20px;
-    margin-top:10px;
-  }
+    .splash {
+        top: 20px;
+        margin-top: 10px;
+    }
 }
 
 .splash form {
-  max-width:400px;
-  text-align: center;
-  margin:auto;
+    max-width: 400px;
+    text-align: center;
+    margin: auto;
 }
-
 @media (min-width: 48em) {
-
     /* We increase the body font size */
     body {
         font-size: 16px;
     }
-
     /* We decrease the width of the .splash, since we have more width
     to work with */
     .splash {
         width: 50%;
         height: 50%;
     }
-
 }
-
 /*
  * -- DESKTOP (AND UP) MEDIA QUERIES --
  * On desktops and other large devices, we want to over-ride some
@@ -94,31 +113,33 @@
 }
 
 .dropdown-toggle {
-  color: #777;
+    color: #777;
 }
 
 .selected {
-  border-bottom: solid 3px purple;
+    border-bottom: solid 3px purple;
 }
 
 .navbar-header {
-  padding-left: 10px;
-  float: left; /* bootstrap removes this on small screens */
+    padding-left: 10px;
+    float: left;
+    /* bootstrap removes this on small screens */
 }
 
 .navbar-right {
-  float: right; /* bootstrap removes this on small screens */
+    float: right;
+    /* bootstrap removes this on small screens */
 }
 
 .container {
-  margin-left: auto;
-  margin-right: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #page-wrapper {
-  background-color: #fff;
-  padding: 50px 0 0 0;
-  height: 100%;
+    background-color: #fff;
+    padding: 50px 0 0;
+    height: 100%;
 }
 
 .main-with-sidebar {
@@ -127,7 +148,6 @@
     height: 100%;
     overflow-y: auto;
 }
-
 @media(min-width:768px) {
     .main-with-sidebar {
         /*position: inherit;*/
@@ -137,24 +157,24 @@
 }
 
 #page {
-  position: relative;
-  height: 100%;
-  overflow-y: auto;
-  padding: 0 15px;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0 15px;
 }
 
 #wrapper {
-  min-height: 100%;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0;
-  display: inline-block;
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
 }
 
 .spanlink {
-  padding: 10px;
-  line-height: 30px;
-  cursor: pointer;
+    padding: 10px;
+    line-height: 30px;
+    cursor: pointer;
 }

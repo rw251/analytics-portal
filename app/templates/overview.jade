@@ -12,10 +12,27 @@
         span patients (of which 
         strong= count.activepatients + ' ' 
         span active)
-      li
-        span= count.locations + ' locations, ' + count.physios + ' physios, ' + count.diagnoses + ' unique diagnoses'
-      li
-        span More stuff
+        ul
+          - for(var id in count.dischargedpatients)
+            li
+              strong= count.dischargedpatients[id]
+              span= " " + id
+      - if(count.locations || count.physios || count.diagnoses)
+        li
+          span= (count.locations ? count.locations + ' locations, ' : '') + (count.physios ? count.physios + ' physios, ' : '') + (count.diagnoses ? count.diagnoses + ' diagnoses' : '')
+      - var ks = Object.keys(diagnostic)
+      - if(ks.length>0)
+          li
+            span Diagnostics
+              - if(diagnostic[ks[0]]==="NA")
+                ul
+                  li
+                    span When you have more than 0 patients, stats will appear here about how complete their records are
+              - else
+                ul
+                  - for(var k in diagnostic)
+                    li
+                      span= (+diagnostic[k]).toFixed(1) + "% of " + k + " fields completed"
 .row
   .col-lg-12
     h1.page-header Top 10

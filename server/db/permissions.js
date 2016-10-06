@@ -29,6 +29,15 @@ var histogram = function(data, cats) {
 };
 
 module.exports = {
+  sidebar: {
+    text: "The sidebar",
+    roles: {
+      mujo: ["top10","locations","distributions","model"],
+      operator:["top10","distributions","model"],
+      provider: ["top10","locations","distributions","model"],
+      payor: ["top10","locations","distributions","model"]
+    }
+  },
   numberPatients: {
     text: "Total number of patients",
     roles: {
@@ -102,7 +111,12 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return rows;
+      var outcomes = ["","discharged with improvement", "discharged without improvement", "referred to surgery", "failure"];
+      var rtn = {};
+      rows.forEach(function(v){
+        rtn[outcomes[v.outcum]]=v.cnt;
+      });
+      return rtn;
     }
   },
   numberPhysios: {
@@ -178,7 +192,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return rows[0].percent.toString();
+      return rows[0].percent !== null ? rows[0].percent.toString() : 'NA';
     }
   },
   percentDiagnosisFields: {
@@ -197,7 +211,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return rows[0].percent.toString();
+      return rows[0].percent !== null ? rows[0].percent.toString() : 'NA';
     }
   },
   percentOccupationFields: {
@@ -216,7 +230,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return rows[0].percent.toString();
+      return rows[0].percent !== null ? rows[0].percent.toString() : 'NA';
     }
   },
   loadFactor: {

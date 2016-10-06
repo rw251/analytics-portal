@@ -1,11 +1,19 @@
 var User = require('../models/user');
 
+var parseSites = function(sites) {
+  return sites.map(function(v) {
+    var els = v.split("|");
+    return { id: els[0], name: els[1] };
+  });
+};
+
 module.exports = {
 
   get: function(email, done) {
     User.findOne({
       'email': email
     }, function(err, user) {
+      if(err) return done(err);
       if (!user) {
         console.log('User doesnt exists with email: ' + email);
         return done(null, false);
@@ -61,10 +69,7 @@ module.exports = {
 
           if (req.body.sites) {
             if(typeof(req.body.sites)!=="object") req.body.sites = [req.body.sites];
-            user.sites = req.body.sites.map(function(v) {
-              var els = v.split("|");
-              return { id: els[0], name: els[1] };
-            });
+            user.sites = parseSites(req.body.sites);
           } else {
             user.sites=[];
           }
@@ -82,6 +87,7 @@ module.exports = {
           User.findOne({
             'email': req.body.email
           }, function(err, user) {
+            if(err) return done(err);
             // if there is already a user with the modified email address
             if (user) {
               console.log('Trying to change the email to one that already appears in the system: ' + email);
@@ -92,10 +98,7 @@ module.exports = {
               originalUser.roles = roles;
               if (req.body.sites) {
                 if(typeof(req.body.sites)!=="object") req.body.sites = [req.body.sites];
-                originalUser.sites = req.body.sites.map(function(v) {
-                  var els = v.split("|");
-                  return { id: els[0], name: els[1] };
-                });
+                originalUser.sites = parseSites(req.body.sites);
               } else {
                 user.sites=[];
               }
@@ -146,10 +149,7 @@ module.exports = {
 
         if (req.body.sites) {
           if(typeof(req.body.sites)!=="object") req.body.sites = [req.body.sites];
-          newUser.sites = req.body.sites.map(function(v) {
-            var els = v.split("|");
-            return { id: els[0], name: els[1] };
-          });
+          newUser.sites = parseSites(req.body.sites);
         } else {
           user.sites=[];
         }

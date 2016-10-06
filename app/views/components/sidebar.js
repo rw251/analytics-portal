@@ -1,3 +1,4 @@
+var data = require('../../data.js');
 var isDrawn = false, isVisible = false;
 
 var side = {
@@ -14,27 +15,27 @@ var side = {
       $('#sidebar-wrapper').show(function(){
         isVisible = true;
       });
+      $('#page-wrapper').addClass("main-with-sidebar");
+      setTimeout(side.highlight,0); //so that the change happens before the page renders
     } else {
-      var tmpl = require('../../templates/sidebar');
-      var html = tmpl();
+      data.getSidebar(function(menuItems){
+        var tmpl = require('../../templates/sidebar');
+        var html = tmpl({menuItems: menuItems});
 
-      $('#sidebar-wrapper').html(html).show();
+        $('#sidebar-wrapper').html(html).show();
 
-      var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-      if (width < 768) {
-        $('div.navbar-collapse').addClass('collapse');
-        //topOffset = $('#side-menu').height();
-      } /*else {
-        $('div.navbar-collapse').removeClass('collapse');
-      }*/
-      //
+        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if (width < 768) {
+          $('div.navbar-collapse').addClass('collapse');
+        }
 
-      side.wireup();
+        side.wireup();
 
-      isDrawn = true;
+        isDrawn = true;
+        $('#page-wrapper').addClass("main-with-sidebar");
+        setTimeout(side.highlight,0); //so that the change happens before the page renders
+      });
     }
-    $('#page-wrapper').addClass("main-with-sidebar");
-    setTimeout(side.highlight,0); //so that the change happens before the page renders
   },
 
   resize: function() {
@@ -58,9 +59,6 @@ var side = {
 
   highlight: function(){
     var url = window.location;
-    // var element = $('ul.nav a').filter(function() {
-    //     return this.href == url;
-    // }).addClass('active').parent().parent().addClass('in').parent();
     $('ul.nav a').removeClass('active');
     var element = $('ul.nav a').filter(function() {
       return this.href == url;
@@ -78,23 +76,7 @@ var side = {
   wireup: function() {
     $(function() {
 
-      $('#side-menu').metisMenu().on('click', 'a', function() {
-        //$('.sidebar-nav').collapse('hide');
-      });
-
-      $('.sidebar-nav').on('show.bs.collapse', function() {
-        // do something…
-      }).on('shown.bs.collapse', function() {
-        // do something…
-        //side.resize.call(window);
-        //$('#sidebar-wrapper').css('position','fixed');
-      }).on('hide.bs.collapse', function() {
-        // do something…
-      }).on('hidden.bs.collapse', function() {
-        // do something…
-        //$('#sidebar-wrapper').css('position','inherit');
-        //side.resize.call(window);
-      });
+      $('#side-menu').metisMenu();
 
       $('body').on('click', function() {
         $('.sidebar-nav').collapse('hide');

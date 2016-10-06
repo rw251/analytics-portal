@@ -6,18 +6,26 @@
         a(href='#portal')
           i.fa.fa-dashboard.fa-fw
           |  Overview
-      li
-        a(href='#portal/top10')
-          i.fa.fa-bar-chart-o.fa-fw
-          |  Top 10
-      li
-        a(href='#portal/distributions')
-          i.fa.fa-pie-chart.fa-fw
-          |  Distributions
-      li
-        a(href='#portal/model')
-          i.fa.fa-line-chart.fa-fw
-          |  Model
+      - if(menuItems.indexOf('top10')>-1)
+        li
+          a(href='#portal/top10')
+            i.fa.fa-bar-chart-o.fa-fw
+            |  Top 10
+      - if(menuItems.indexOf('locations')>-1)
+        li
+          a(href='#portal/locations')
+            i.fa.fa-map-marker.fa-fw
+            |  Locations
+      - if(menuItems.indexOf('distributions')>-1)
+        li
+          a(href='#portal/distributions')
+            i.fa.fa-pie-chart.fa-fw
+            |  Distributions
+      - if(menuItems.indexOf('model')>-1)
+        li
+          a(href='#portal/model')
+            i.fa.fa-line-chart.fa-fw
+            |  Model
       li
         a(href='#portal2')
           i.fa.fa-sitemap.fa-fw
