@@ -2,6 +2,8 @@
 
 # Design Specification
 
+UPDATED: 6th October 2016 - **additions** ~~deletions~~
+
 ## 1 Introduction
 
 ### 1.1 Overview
@@ -11,7 +13,7 @@ This document provides a complete overview of the design and functionality of th
 ### 1.2 Related documents
 
 * The [Technical specification](tech.md) lays out precisely how the application will be built, tested and deployed.
-* The [User requirement specification]() provides the detail of what is required by the user.
+* The [User requirement specification](https://docs.google.com/document/d/1SYVugRCuzjcj8jgR8f8yrp-2E4V5km13pVF3XVbmyXY/edit) provides the detail of what is required by the user.
 
 ### 1.3 Structure
 
@@ -41,17 +43,21 @@ It is expected that the web application will work on all modern browsers, howeve
 
 The home page provides the landing page for when users arrive at the dashboard. It will contain high level text (to be provided by Mujo) explaining what the dashboard is and how it fits within the project.
 
-A title bar at the top of the screen provides access to the dashboard - as does a large button in the centre of the screen. There are two options in the title bar: Home and Analtics Portal. The currently viewed page is underlined.
+**Users can gain access to the portal by logging in with their email address and password.**
 
-A future version may have the ability for users to log in. There would then be a drop down menu in the top right showing who is logged in and allowing users to change/delete their profile and log out. However this will not be delivered as part of the current project.
+~~A title bar at the top of the screen provides access to the dashboard - as does a large button in the centre of the screen. There are two options in the title bar: Home and Analtics Portal. The currently viewed page is underlined.~~
+
+~~A future version may have the ability for users to log in. There would then be a drop down menu in the top right showing who is logged in and allowing users to change/delete their profile and log out. However this will not be delivered as part of the current project.~~
 
 #### Mock-up
 
 ![Home screen image ](https://github.com/rw251/analytics-portal/blob/master/docs/img/1-Base - home.jpg)
 
+**In addition a login form will be presented in the centre of the screen.**
+
 #### Responsive design
 
-Below a certain screen size the name "Industry Portal" in the title bar will shrink to just "Portal".
+~~Below a certain screen size the name "Industry Portal" in the title bar will shrink to just "Portal".~~
 
 If there are multiple columns of text then they will collapse into a single column.
 
@@ -63,26 +69,38 @@ If there are multiple columns of text then they will collapse into a single colu
 
 The user is presented with an overview of the various features in the dashboard.
 
-A menu on the left hand side provides the four areas of the dashboard that are available to the user:
+A menu on the left hand side provides the ~~four~~ areas of the dashboard that are available to the user:
 
 * overview
 * top 10
+* **locations**
 * distributions
 * predictive model
 
 The side menu highlights the currently viewed section.
 
-The main body of the page displays a summary box giving the following information:
+The main body of the page displays a summary box giving **some or all of** the following information **depending on the user's role**:
 
 * When the data was last updated
 * Total number of patients (and number who are active)
-* The total number of locations, physios, prescriptions
+* **The number of discharged patients for each outcome**
+  * **dischaged with improvement**
+  * **dischaged without improvement**
+  * **referred for surgery**
+  * **failure**
+* The total number of locations, physios, **and diagnoses**~~prescriptions~~
+* **The proportion of complete age, occupation and diagnosis fields**
 
 There is then also the first few elements from the "top 10" and the "distributions" pages, with a link to see more taking the user to the relevant section of the dashboard.
 
 #### Mock-up
 
 ![Dashboard overview image](https://github.com/rw251/analytics-portal/blob/master/docs/img/2-Portal - overview.jpg)
+
+**Not shown in the mockup:**
+
+* **Additional summary information**
+* **The locations tab**
 
 #### Responsive design
 
@@ -98,24 +116,50 @@ The user is presented with a variety of information in the form of "top 10" colu
 
 The current planned list of charts is:
 
-`TODO: This table is incomplete`
+~~`TODO: This table is incomplete`~~
 
-| x-axis       | y-axis        |
-|--------------|---------------|
-| Location     | # of patients |
-| Prescription | # of patients |
-| Physio       | # of patients |
-| Occupation   | # of patients |
+| x-axis                   | y-axis                 |
+|--------------------------|------------------------|
+| Location                 | # of patients          |
+| ~~Prescription~~         | ~~# of patients~~      |
+| Physio                   | # of patients          |
+| **Physio**               | **Successful outcome** |
+| ~~Occupation~~           | ~~# of patients~~      |
+| **Device**               | **Avg session time**   |
+| **Device**               | **Bearing life**       |
+| **Device**               | **Cable life**         |
+| **Failure reason**       | **# of patients**      |
+
+**The user can toggle between a table and a bar chart. In table mode they can request to see all categories rather than just the top 10.**
 
 #### Mock-up
 
 ![top 10 image](https://github.com/rw251/analytics-portal/blob/master/docs/img/3-Portal - top 10.jpg)
 
+**Not shown in the mock-up**
+
+* **Ability to toggle between table and chart**
+* **Ability to see more than the top 10**
+
 #### Responsive design
 
-The number of columns will adapt depending on screen size from a maximum of 4 down to 1 for mobiles.
+The number of columns will adapt depending on screen size from a maximum of ~~4~~ **2** down to 1 for mobiles.
 
-### 2.4 Distributions
+### 2.4 Locations
+
+#### Description
+
+**The user is presented with a heat map showing the location of patients, together with markers showing the list of sites.**
+
+#### Mock-up
+
+![](https://github.com/rw251/analytics-portal/blob/master/docs/img/location.png)
+
+#### Responsive design
+
+**The map will size according to the dimensions available on the screen.**
+
+### 2.~~4~~**5** Distributions
 
 [Issue #5 - create distribution page](https://github.com/rw251/analytics-portal/issues/5)
 
@@ -138,7 +182,7 @@ It is also possible for the user to alter the list of patients displayed in the 
 
 The number of columns will adapt depending on screen size from a maximum of 4 down to 1 for mobiles.
 
-### 2.5 Predictive model
+### 2.~~5~~**6** Predictive model
 
 [Issue #6 - create model page](https://github.com/rw251/analytics-portal/issues/6)
 
