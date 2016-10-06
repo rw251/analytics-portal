@@ -14,13 +14,11 @@ var App = {
      *** This happens when the page is ready ***
      ******************************************/
     $(document).on('ready', function() {
-      //hack to auto load what i'm working on
-      //location.hash="#portal";
-      layout.loadView(location.hash);
+      layout.loadView(location.pathname, location.hash);
     });
 
     $(window).on('popstate', function(e) {
-      layout.loadView(location.hash);
+      layout.loadView(location.pathname, location.hash);
     });
   }
 };

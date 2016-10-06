@@ -13,7 +13,7 @@ var portal = {
       $('#toggle-button').removeClass('home-screen');
 
       $('.navbar-brand').removeClass("selected");
-      $('.navbar-brand[href*=portal]').addClass("selected");
+      $('.navbar-brand[href!="#home"]').addClass("selected");
 
       sidebar.show();
 

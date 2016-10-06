@@ -18,7 +18,6 @@ Chart.controllers.empty = Chart.DatasetController.extend({
     this.chart.chart.ctx.textBaseline = "middle";
     this.chart.chart.ctx.fillStyle = Chart.defaults.global.scaleFontColor;
     this.chart.chart.ctx.fillText("No data in chart.", this.chart.chart.ctx.canvas.clientWidth / 2, this.chart.chart.ctx.canvas.clientHeight / 2);
-    console.log(this);
   },
 
   // Remove hover styling from the given element

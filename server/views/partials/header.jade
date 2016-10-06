@@ -1,8 +1,8 @@
 #header.navbar.navbar-default.navbar-fixed-top
   // Navigation
   .navbar-header
-    a.navbar-brand.selected(href='#home') Home
-    a.navbar-brand(href='#portal')
+    a.navbar-brand(href='#home',class=(isPortal ? "":"selected")) Home
+    a.navbar-brand(href='#',class=(isPortal ? "selected":""))
       span.hide-if-super-small Analytics
       | Portal
   nav(role='navigation', style='margin-bottom: 0')

@@ -60,9 +60,13 @@ var side = {
   highlight: function(){
     var url = window.location;
     $('ul.nav a').removeClass('active');
-    var element = $('ul.nav a').filter(function() {
+    var elList = $('ul.nav a').filter(function() {
       return this.href == url;
-    }).addClass('active').parent();
+    });
+    if(elList.length===0) elList = $('ul.nav a').filter(function() {
+      return this.href[this.href.length - 1] === '#';
+    });
+    var element = elList.addClass('active').parent();
 
     while (true) {
       if (element.is('li')) {

@@ -3,27 +3,27 @@
     ul#side-menu.nav
       li.sidebar-search
       li
-        a(href='#portal')
+        a(href='#')
           i.fa.fa-dashboard.fa-fw
           |  Overview
       - if(menuItems.indexOf('top10')>-1)
         li
-          a(href='#portal/top10')
+          a(href='#top10')
             i.fa.fa-bar-chart-o.fa-fw
             |  Top 10
       - if(menuItems.indexOf('locations')>-1)
         li
-          a(href='#portal/locations')
+          a(href='#locations')
             i.fa.fa-map-marker.fa-fw
             |  Locations
       - if(menuItems.indexOf('distributions')>-1)
         li
-          a(href='#portal/distributions')
+          a(href='#distributions')
             i.fa.fa-pie-chart.fa-fw
             |  Distributions
       - if(menuItems.indexOf('model')>-1)
         li
-          a(href='#portal/model')
+          a(href='#model')
             i.fa.fa-line-chart.fa-fw
             |  Model
       li

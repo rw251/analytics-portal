@@ -10,7 +10,7 @@ var mongoose = require('mongoose');
 
 module.exports = function(PORT, PATH, CALLBACK) {
 
-  mongoose.set('debug', true);
+  //mongoose.set('debug', true);
   mongoose.connect(config.mongo.url);
 
   if (config.mysql.host) {

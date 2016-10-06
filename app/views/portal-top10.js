@@ -14,7 +14,7 @@ var portal = {
       $('#toggle-button').removeClass('home-screen');
 
       $('.navbar-brand').removeClass("selected");
-      $('.navbar-brand[href*=portal]').addClass("selected");
+      $('.navbar-brand[href!="#home"]').addClass("selected");
 
       cats.forEach(function(v,idx){
         charts.drawTop10Chart(v,$('#chart'+idx));

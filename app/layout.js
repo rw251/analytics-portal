@@ -7,19 +7,18 @@ var home = require('views/home.js'),
 
 var layout = {
 
-  loadView: function(hash){
+  loadView: function(path, hash){
 
-    var urlBits = hash.split("/");
-
-    if(urlBits[0] === '#portal'){
-      if(!urlBits[1]) portalOverview.show();
-      else if(urlBits[1]==='top10') portalTop10.show(urlBits);
-      else if(urlBits[1]==='locations') portalLocations.show(urlBits);
-      else if(urlBits[1]==='distributions') portalDistributions.show(urlBits);
-      else if(urlBits[1]==='model') portalModel.show(urlBits);
-      else home.show();
+    if(path==="/portal") {
+      if(hash==='#top10') portalTop10.show();
+      else if(hash==='#locations') portalLocations.show();
+      else if(hash==='#distributions') portalDistributions.show();
+      else if(hash==='#model') portalModel.show();
+      else if(hash==='#home') home.show();
+      else portalOverview.show();
+    } else {
+      home.show();
     }
-    else home.show();
   }
 
 };

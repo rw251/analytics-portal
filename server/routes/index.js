@@ -34,6 +34,7 @@ module.exports = function(passport) {
   /* Handle Login POST */
   router.post('/login', passport.authenticate('login', { failureFlash: true, failureRedirect: '/login' }), function(req, res) {
     var red = req.session.redirect_to || '/';
+    if(red==='/') red = '/portal';
     if (req.body.hash) red += '#' + req.body.hash;
     req.session.redirect_to = null;
     delete req.session.redirect_to;
@@ -173,6 +174,10 @@ module.exports = function(passport) {
 
   router.get('/', isAuthenticated, function(req, res, next){
     res.render('pages/index.jade', { admin: req.user.roles.indexOf("admin") > -1, fullname: req.user.fullname });
+  });
+
+  router.get('/portal', isAuthenticated, function(req, res, next){
+    res.render('pages/portal.jade', { isPortal: true, admin: req.user.roles.indexOf("admin") > -1, fullname: req.user.fullname });
   });
 
   /* Ensure all html/js resources are only accessible if authenticated */
