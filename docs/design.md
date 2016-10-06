@@ -51,7 +51,7 @@ The home page provides the landing page for when users arrive at the dashboard. 
 
 #### Mock-up
 
-![Home screen image ](https://github.com/rw251/analytics-portal/blob/master/docs/img/1-Base - home.jpg)
+![Home screen image ](https://github.com/rw251/analytics-portal/blob/master/docs/img/login.png)
 
 **In addition a login form will be presented in the centre of the screen.**
 
@@ -95,7 +95,7 @@ There is then also the first few elements from the "top 10" and the "distributio
 
 #### Mock-up
 
-![Dashboard overview image](https://github.com/rw251/analytics-portal/blob/master/docs/img/2-Portal - overview.jpg)
+![Dashboard overview image](https://github.com/rw251/analytics-portal/blob/master/docs/img/overview.png)
 
 **Not shown in the mockup:**
 
@@ -134,7 +134,7 @@ The current planned list of charts is:
 
 #### Mock-up
 
-![top 10 image](https://github.com/rw251/analytics-portal/blob/master/docs/img/3-Portal - top 10.jpg)
+![top 10 image](https://github.com/rw251/analytics-portal/blob/master/docs/img/top10.png)
 
 **Not shown in the mock-up**
 
@@ -180,7 +180,7 @@ It is also possible for the user to alter the list of patients displayed in the 
 
 #### Responsive design
 
-The number of columns will adapt depending on screen size from a maximum of 4 down to 1 for mobiles.
+The number of columns will adapt depending on screen size from a maximum of ~~4~~**2* down to 1 for mobiles.
 
 ### 2.~~5~~**6** Predictive model
 
