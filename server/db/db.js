@@ -1,12 +1,11 @@
-var mysql = require('mysql'),
- config = require('../config.js');
+var mysql = require('mysql');
 
 var state = {
   pool: null
 };
 
-exports.connect = function(done) {
-  state.pool = mysql.createPool(config.mysql);
+exports.connect = function(config, done) {
+  state.pool = mysql.createPool(config);
 
   done();
 };

@@ -13,8 +13,18 @@ module.exports = function(PORT, PATH, CALLBACK) {
   //mongoose.set('debug', true);
   mongoose.connect(config.mongo.url);
 
-  if (config.mysql.host) {
-    db.connect(function(err) {
+  if(config.aws_mysql.host) {
+    db.connect(config.aws_mysql, function(err) {
+      if (err) {
+        console.log('Unable to connect to MySQL.');
+        process.exit(1);
+      } else {
+        console.log('MySQL connection established');
+      }
+    });
+  }
+  else if (config.mysql.host) {
+    db.connect(config.mysql, function(err) {
       if (err) {
         console.log('Unable to connect to MySQL.');
         process.exit(1);

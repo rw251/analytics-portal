@@ -5,19 +5,31 @@ var portal = {
 
   show: function(){
 
-    data.getLocations(function(location){
+    data.getLocations(function(locationData){
+
+      if(location.hash.replace('#','')!=="locations") {
+        //user has tabbed away so ignore
+        return;
+      }
 
       var tmpl = require('../templates/locations');
-      var html = tmpl(location);
-      $('#page').html(html);
-      $('#toggle-button').removeClass('home-screen');
-
-      $('.navbar-brand').removeClass("selected");
-      $('.navbar-brand[href!="#home"]').addClass("selected");
-
-      sidebar.show();
+      var html = tmpl(locationData);
+      $('#page').fadeOut(1000, function(){
+        $(this).html(html).fadeIn(1000);
+      });
 
     });
+
+    var tmpl = require('../templates/waiting');
+    var html = tmpl();
+
+    $('#page').html(html);
+    $('#toggle-button').removeClass('home-screen');
+
+    $('.navbar-brand').removeClass("selected");
+    $('.navbar-brand[href!="#home"]').addClass("selected");
+
+    sidebar.show();
 
   }
 

@@ -4,30 +4,41 @@ var sidebar = require('./components/sidebar.js'),
 
 var portal = {
 
-  show: function(){
+  show: function() {
 
-    data.getSummary(function(summary){
+    data.getSummary(function(summary) {
+
+      if(location.hash!=="") {
+        //user has tabbed away so ignore
+        return;
+      }
 
       var tmpl = require('../templates/overview');
       var html = tmpl(summary);
-      $('#page').html(html);
-      $('#toggle-button').removeClass('home-screen');
 
-      $('.navbar-brand').removeClass("selected");
-      $('.navbar-brand[href!="#home"]').addClass("selected");
+      $('#page').fadeOut(1000, function(){
+        $(this).html(html).fadeIn(1000);
 
-      ["physios","prescriptions"].forEach(function(v,i){
-        charts.drawTop10Chart(v,$('#chartTop'+i));
+        ["physios", "prescriptions"].forEach(function(v, i) {
+          charts.drawTop10Chart(v, $('#chartTop' + i));
+        });
+
+        charts.drawAgeDistribution($('#chartDist0'));
+        charts.drawSexDistribution($('#chartDist1'));
       });
 
-      charts.drawAgeDistribution($('#chartDist0'));
-      charts.drawSexDistribution($('#chartDist1'));
-
-
-      sidebar.show();
-      //sidebar.wireup();
-
     });
+
+    var tmpl = require('../templates/waiting');
+    var html = tmpl();
+
+    $('#page').html(html);
+    $('#toggle-button').removeClass('home-screen');
+
+    $('.navbar-brand').removeClass("selected");
+    $('.navbar-brand[href!="#home"]').addClass("selected");
+
+    sidebar.show();
 
   }
 
