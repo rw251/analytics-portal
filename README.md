@@ -18,7 +18,7 @@ Perhaps just a link to the document
 
 [travis-url]: https://travis-ci.org/rw251/analytics-portal
 [travis-image]: https://travis-ci.org/rw251/analytics-portal.svg?branch=master
-[david-dm-image]: https://david-dm.org/rw251/analytics-portal.svg
+[david-dm-image]: https://david-dm.org/rw251/analytics-portal/status.svg
 [david-dm-url]: https://david-dm.org/rw251/analytics-portal
 [codecov-image]: https://codecov.io/github/rw251/analytics-portal/coverage.svg?branch=master
 [codecov-url]: https://codecov.io/github/rw251/analytics-portal?branch=master
