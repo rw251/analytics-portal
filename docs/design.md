@@ -86,7 +86,7 @@ The main body of the page displays a summary box giving **some or all of** the f
   * **dischaged without improvement**
   * **referred for surgery**
   * **failure**
-* The total number of locations, physios, **and diagnoses**~~prescriptions~~
+* The total number of locations, physios, prescriptions, **and diagnoses**
 * **The proportion of complete age, occupation and diagnosis fields**
 
 There is then also the first few elements from the "top 10" and the "distributions" pages, with a link to see more taking the user to the relevant section of the dashboard.
@@ -119,7 +119,7 @@ The current planned list of charts is:
 | ~~Prescription~~         | ~~# of patients~~      |
 | Physio                   | # of patients          |
 | **Physio**               | **Successful outcome** |
-| ~~Occupation~~           | ~~# of patients~~      |
+| Occupation               | # of patients          |
 | **Device**               | **Avg session time**   |
 | **Device**               | **Bearing life**       |
 | **Device**               | **Cable life**         |

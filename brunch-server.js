@@ -6,15 +6,17 @@ var bodyParser = require('body-parser');
 
 var config = require('./server/config.js');
 var db = require('./server/db/db.js');
-var mongoose = require('mongoose');
+var mongodb = require('./server/db/mongodb.js');
+var DEBUG = false;
 
 module.exports = function(PORT, PATH, CALLBACK) {
 
-  //mongoose.set('debug', true);
-  mongoose.connect(config.mongo.url);
+  if(DEBUG) mongodb.enableDebug();
+  mongodb.connect(mongodb.PRODUCTION_URI);
 
   if(config.aws_mysql.host) {
-    db.connect(config.aws_mysql, function(err) {
+    if(DEBUG) db.enableDebug();
+    db.connect(db.MODE_PRODUCTION, config.aws_mysql, function(err) {
       if (err) {
         console.log('Unable to connect to MySQL.');
         process.exit(1);
@@ -24,7 +26,7 @@ module.exports = function(PORT, PATH, CALLBACK) {
     });
   }
   else if (config.mysql.host) {
-    db.connect(config.mysql, function(err) {
+    db.connect(db.MODE_PRODUCTION, config.mysql, function(err) {
       if (err) {
         console.log('Unable to connect to MySQL.');
         process.exit(1);

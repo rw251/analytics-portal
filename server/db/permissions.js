@@ -29,6 +29,14 @@ var histogram = function(data, cats) {
 };
 
 module.exports = {
+  last_updated: {
+    query: function(dataObj) {
+      return 'SELECT MAX(startDate) as last_updated FROM exercise_session';
+    },
+    result: function(rows) {
+      return rows[0].last_updated;
+    }
+  },
   sidebar: {
     text: "The sidebar",
     roles: {
@@ -46,11 +54,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite,
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT COUNT(*) cnt FROM patient_info_copy',
-        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE u.email = ' + db.get().escape(user.email) + ') as sub',
-        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN prescription rx on rx.userId = p.userId INNER JOIN site s on s.id = rx.siteId WHERE s.id in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')) as sub'
+        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE u.email = ' + db.get().escape(dataObj.user.email) + ') as sub',
+        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN prescription rx on rx.userId = p.userId INNER JOIN site s on s.id = rx.siteId WHERE s.id in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')) as sub'
       ]);
     },
     result: function(rows) {
@@ -65,11 +73,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT COUNT(*) cnt FROM patient_info_copy WHERE outcome IS NULL OR outcome=""',
-        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId  WHERE (p.outcome IS NULL OR p.outcome="") AND u.email = ' + db.get().escape(user.email) + ') as sub',
-        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN prescription rx on rx.userId = p.userId INNER JOIN site s on s.id = rx.siteId  WHERE (p.outcome IS NULL OR p.outcome="") AND s.id in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')) as sub'
+        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId  WHERE (p.outcome IS NULL OR p.outcome="") AND u.email = ' + db.get().escape(dataObj.user.email) + ') as sub',
+        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN prescription rx on rx.userId = p.userId INNER JOIN site s on s.id = rx.siteId  WHERE (p.outcome IS NULL OR p.outcome="") AND s.id in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')) as sub'
       ]);
     },
     result: function(rows) {
@@ -84,11 +92,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT COUNT(*) cnt FROM patient_info_copy WHERE outcome IS NOT NULL AND outcome!=""',
-        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId  WHERE (p.outcome IS NOT NULL AND p.outcome!="") AND u.email = ' + db.get().escape(user.email) + ') as sub',
-        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN prescription rx on rx.userId = p.userId INNER JOIN site s on s.id = rx.siteId  WHERE (p.outcome IS NOT NULL AND p.outcome!="") AND s.id in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')) as sub'
+        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId  WHERE (p.outcome IS NOT NULL AND p.outcome!="") AND u.email = ' + db.get().escape(dataObj.user.email) + ') as sub',
+        'SELECT COUNT(*) cnt FROM (SELECT DISTINCT p.userId FROM patient_info_copy p INNER JOIN prescription rx on rx.userId = p.userId INNER JOIN site s on s.id = rx.siteId  WHERE (p.outcome IS NOT NULL AND p.outcome!="") AND s.id in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')) as sub'
       ]);
     },
     result: function(rows) {
@@ -103,11 +111,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' GROUP BY outcum",
         '',
-        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' AND userId IN (SELECT userId FROM prescription WHERE siteId in (" + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ") GROUP BY userId) GROUP BY outcum"
+        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' AND userId IN (SELECT userId FROM prescription WHERE siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ") GROUP BY userId) GROUP BY outcum"
       ]);
     },
     result: function(rows) {
@@ -127,11 +135,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT count(*) as cnt FROM (SELECT c.id FROM user_copy c INNER JOIN user_role r on c.userRoleId=r.id WHERE LOWER(r.name)="physio" GROUP BY c.id) as sub',
         'SELECT count(*) as cnt FROM (SELECT c.id FROM user_copy c INNER JOIN user_role r on c.userRoleId=r.id WHERE LOWER(r.name)="physio" GROUP BY c.id) as sub',
-        'SELECT count(*) as cnt FROM (SELECT c.id FROM user_copy c INNER JOIN user_role r on c.userRoleId=r.id WHERE LOWER(r.name)="physio" AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY c.id) as sub'
+        'SELECT count(*) as cnt FROM (SELECT c.id FROM user_copy c INNER JOIN user_role r on c.userRoleId=r.id WHERE LOWER(r.name)="physio" AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY c.id) as sub'
       ]);
     },
     result: function(rows) {
@@ -146,11 +154,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT count(*) as cnt FROM (SELECT diagnosis FROM patient_info_copy WHERE diagnosis is not null AND diagnosis != "" GROUP BY diagnosis) as sub',
-        'SELECT count(*) as cnt FROM (SELECT diagnosis FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE diagnosis is not null AND diagnosis != "" AND email = ' + db.get().escape(user.email) + ') GROUP BY diagnosis) as sub',
-        'SELECT count(*) as cnt FROM (SELECT diagnosis FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE diagnosis is not null AND diagnosis != ""  AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY diagnosis) as sub'
+        'SELECT count(*) as cnt FROM (SELECT diagnosis FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE diagnosis is not null AND diagnosis != "" AND email = ' + db.get().escape(dataObj.user.email) + ') GROUP BY diagnosis) as sub',
+        'SELECT count(*) as cnt FROM (SELECT diagnosis FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE diagnosis is not null AND diagnosis != ""  AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY diagnosis) as sub'
       ]);
     },
     result: function(rows) {
@@ -165,11 +173,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT count(*) cnt FROM (SELECT id FROM site WHERE isActive=1 GROUP BY id) as sub',
-        'SELECT count(*) cnt FROM (SELECT cc.siteId FROM user_copy c INNER JOIN patient_physio p on p.physioId = c.id INNER JOIN user_copy cc on cc.id = p.userId WHERE c.email = ' + db.get().escape(user.email) + ' GROUP by cc.siteId) as sub',
-        'SELECT count(*) cnt FROM (SELECT id FROM site WHERE isActive=1 AND id in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY id) as sub'
+        'SELECT count(*) cnt FROM (SELECT cc.siteId FROM user_copy c INNER JOIN patient_physio p on p.physioId = c.id INNER JOIN user_copy cc on cc.id = p.userId WHERE c.email = ' + db.get().escape(dataObj.user.email) + ' GROUP by cc.siteId) as sub',
+        'SELECT count(*) cnt FROM (SELECT id FROM site WHERE isActive=1 AND id in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY id) as sub'
       ]);
     },
     result: function(rows) {
@@ -184,11 +192,11 @@ module.exports = {
       provider: auth.no,
       payor: auth.no
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT 100*SUM(CASE WHEN dateOfBirth is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p WHERE (outcome is null OR outcome = "")',
-        'SELECT 100*SUM(CASE WHEN dateOfBirth is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(user.email),
-        'SELECT 100*SUM(CASE WHEN dateOfBirth is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')'
+        'SELECT 100*SUM(CASE WHEN dateOfBirth is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email),
+        'SELECT 100*SUM(CASE WHEN dateOfBirth is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
       ]);
     },
     result: function(rows) {
@@ -203,11 +211,11 @@ module.exports = {
       provider: auth.no,
       payor: auth.no
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT 100*SUM(CASE WHEN diagnosis is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p WHERE (outcome is null OR outcome = "")',
-        'SELECT 100*SUM(CASE WHEN diagnosis is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(user.email),
-        'SELECT 100*SUM(CASE WHEN diagnosis is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')'
+        'SELECT 100*SUM(CASE WHEN diagnosis is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email),
+        'SELECT 100*SUM(CASE WHEN diagnosis is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
       ]);
     },
     result: function(rows) {
@@ -222,11 +230,11 @@ module.exports = {
       provider: auth.no,
       payor: auth.no
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT 100*SUM(CASE WHEN occupation is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p WHERE (outcome is null OR outcome = "")',
-        'SELECT 100*SUM(CASE WHEN occupation is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(user.email),
-        'SELECT 100*SUM(CASE WHEN occupation is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')'
+        'SELECT 100*SUM(CASE WHEN occupation is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email),
+        'SELECT 100*SUM(CASE WHEN occupation is null THEN 0 ELSE 1 END) / COUNT(*) as percent FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
       ]);
     },
     result: function(rows) {
@@ -241,13 +249,13 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
+    query: function(dataObj) {
       var timeAvailable = 1000 * 60 * 60 * 8 * 20;
       var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
-      return q(this.roles, user.roles[0], [
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
@@ -262,11 +270,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
@@ -281,11 +289,11 @@ module.exports = {
       provider: auth.bySite,
       payor: auth.bySite
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise WHERE skipReason IS NOT NULL GROUP BY skipReason ORDER BY COUNT(*) desc',
         '',
-        'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId WHERE skipReason IS NOT NULL AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY skipReason ORDER BY COUNT(*) desc'
+        'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId WHERE skipReason IS NOT NULL AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY skipReason ORDER BY COUNT(*) desc'
       ]);
     },
     result: function(rows) {
@@ -327,11 +335,11 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT (to_days(now()) - to_days(dateOfBirth))/365.25 as val FROM patient_info_copy WHERE dateOfBirth is not null;',
-        'SELECT (to_days(now()) - to_days(dateOfBirth))/365.25 as val FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE dateOfBirth is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(user.email),
-        'SELECT (to_days(now()) - to_days(dateOfBirth))/365.25 as val FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE dateOfBirth is not null AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')'
+        'SELECT (to_days(now()) - to_days(dateOfBirth))/365.25 as val FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE dateOfBirth is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email),
+        'SELECT (to_days(now()) - to_days(dateOfBirth))/365.25 as val FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE dateOfBirth is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
       ]);
     },
     result: function(rows) {
@@ -346,11 +354,11 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT gender, count(*) as num FROM patient_info_copy WHERE gender is not null GROUP BY gender',
-        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE gender is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(user.email) + ' GROUP BY gender',
-        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE gender is not null AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ') GROUP BY gender'
+        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE gender is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email) + ' GROUP BY gender',
+        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE gender is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY gender'
       ]);
     },
     result: function(rows) {
@@ -371,11 +379,11 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'SELECT weight/height*height as val from patient_info_copy where height is not null and weight is not null',
-        'SELECT weight/height*height as val FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId where height is not null and weight is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(user.email),
-        'SELECT weight/height*height as val FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId where height is not null and weight is not null AND siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')'
+        'SELECT weight/height*height as val FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId where height is not null and weight is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email),
+        'SELECT weight/height*height as val FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId where height is not null and weight is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
       ]);
     },
     result: function(rows) {
@@ -390,11 +398,11 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         'select hour(startDate)+minute(startDate)/60 as val from exercise_session',
-        'select hour(startDate)+minute(startDate)/60 as val from exercise_session e INNER JOIN prescription p on p.id = e.prescriptionId INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE u.email = ' + db.get().escape(user.email),
-        'select hour(startDate)+minute(startDate)/60 as val from exercise_session e INNER JOIN prescription p on p.id = e.prescriptionId WHERE siteId in (' + db.get().escape(user.sites.map(function(v) { return +v.id; })) + ')'
+        'select hour(startDate)+minute(startDate)/60 as val from exercise_session e INNER JOIN prescription p on p.id = e.prescriptionId INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE u.email = ' + db.get().escape(dataObj.user.email),
+        'select hour(startDate)+minute(startDate)/60 as val from exercise_session e INNER JOIN prescription p on p.id = e.prescriptionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
       ]);
     },
     result: function(rows) {
@@ -409,10 +417,10 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as cnt FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL GROUP BY physioId ORDER BY cnt desc",
-        "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as cnt FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL AND u.email = " + db.get().escape(user.email) + " GROUP BY physioId ORDER BY cnt desc",
+        "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as cnt FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL AND u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY physioId ORDER BY cnt desc",
         ''
       ]);
     },
@@ -428,8 +436,8 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         '',
         '',
         ''
@@ -447,8 +455,8 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         '',
         '',
         ''
@@ -466,8 +474,8 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         '',
         '',
         ''
@@ -485,8 +493,8 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         '',
         '',
         ''
@@ -505,8 +513,8 @@ module.exports = {
       provider: auth.yes,
       payor: auth.yes
     },
-    query: function(user) {
-      return q(this.roles, user.roles[0], [
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
         "SELECT AVG(cnt) as mean, VARIANCE(cnt) as variance FROM (SELECT count(*) cnt FROM prescription p INNER JOIN exercise_session e on e.prescriptionId = p.id INNER JOIN patient_info_copy pic on pic.userId = p.userId WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' AND SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1)=1 GROUP BY p.userId) sub",
         '',
         ''

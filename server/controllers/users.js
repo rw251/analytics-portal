@@ -100,7 +100,7 @@ module.exports = {
                 if(typeof(req.body.sites)!=="object") req.body.sites = [req.body.sites];
                 originalUser.sites = parseSites(req.body.sites);
               } else {
-                user.sites=[];
+                originalUser.sites=[];
               }
               // save the user
               originalUser.save(function(err) {
@@ -151,7 +151,7 @@ module.exports = {
           if(typeof(req.body.sites)!=="object") req.body.sites = [req.body.sites];
           newUser.sites = parseSites(req.body.sites);
         } else {
-          user.sites=[];
+          newUser.sites=[];
         }
 
         // save the user

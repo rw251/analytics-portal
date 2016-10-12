@@ -1,9 +1,41 @@
 var db = require('./db.js'),
   permissions = require('./permissions.js');
 
+/**
+  * @desc Executes the query and returns the results
+  * @param object $sqlObject - The query/result object.
+  * @param object $dataObj - The data to pass to query.
+  * @param function(err, value) $callback - Called with the results
+  * @return null
+  */
+var doQuery = function(sqlObject, dataObj, callback) {
+  var queryString = sqlObject.query(dataObj);
+  console.log(queryString);
+  if (!queryString) {
+    //user not allowed
+    return callback(new Error("NOAUTH"));
+  }
+  var r = "query" + Math.random().toString();
+  if(db.isDebug()) console.time(r);
+  db.get().query(queryString, function(err, rows) {
+    if(db.isDebug()) console.timeEnd(r);
+    if (err) return callback(err);
+    callback(null, sqlObject.result(rows));
+  });
+};
+
 var query = {
 
   summary: {
+
+    allParallel: function(user, done){
+
+      var rtn = { count: {}, diagnostic: {} };
+      var counter = 0;
+
+
+
+    },
 
     all: function(user, done) {
       var rtn = { count: {}, diagnostic: {} };
@@ -51,82 +83,33 @@ var query = {
     },
 
     last_updated: function(done) {
-      db.get().query('SELECT MAX(startDate) as last_updated FROM exercise_session', function(err, rows) {
-        if (err) return done(err);
-        done(null, rows[0].last_updated);
-      });
+      doQuery(permissions.last_updated, {}, done);
     },
 
     count: {
 
       patients: function(user, done) {
-        var queryString = permissions.numberPatients.query(user);
-        console.log(queryString);
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.numberPatients.result(rows));
-        });
+        doQuery(permissions.numberPatients, {user: user}, done);
       },
 
       active_patients: function(user, done) {
-        var queryString = permissions.numberActivePatients.query(user);
-        console.log(queryString);
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.numberActivePatients.result(rows));
-        });
+        doQuery(permissions.numberActivePatients, {user: user}, done);
       },
 
       discharged_patients: function(user, done) {
-        var queryString = permissions.numberDischargedWithOutcome.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.numberDischargedWithOutcome.result(rows));
-        });
+        doQuery(permissions.numberDischargedWithOutcome, {user: user}, done);
       },
 
       locations: function(user, done) {
-        var queryString = permissions.numberLocations.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.numberLocations.result(rows));
-        });
+        doQuery(permissions.numberLocations, {user: user}, done);
       },
 
       diagnoses: function(user, done) {
-        var queryString = permissions.numberDiagnoses.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.numberDiagnoses.result(rows));
-        });
+        doQuery(permissions.numberDiagnoses, {user: user}, done);
       },
 
       physios: function(user, done) {
-        var queryString = permissions.numberPhysios.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.numberPhysios.result(rows));
-        });
+        doQuery(permissions.numberPhysios, {user: user}, done);
       },
 
       prescriptions: function(done) {
@@ -169,42 +152,15 @@ var query = {
     fieldPercentage: {
 
       age: function(user, done) {
-        var queryString = permissions.percentAgeFields.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.percentAgeFields.result(rows));
-        });
+        doQuery(permissions.percentAgeFields, {user: user}, done);
       },
 
       diagnosis: function(user, done) {
-        var queryString = permissions.percentDiagnosisFields.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.percentDiagnosisFields.result(rows));
-        });
+        doQuery(permissions.percentDiagnosisFields, {user: user}, done);
       },
 
       occupation: function(user, done) {
-        var queryString = permissions.percentOccupationFields.query(user);
-        console.log(queryString);
-        if (!queryString) {
-          //user not allowed
-          return done(new Error("NOAUTH"));
-        }
-        db.get().query(queryString, function(err, rows) {
-          if (err) return done(err);
-          done(null, permissions.percentOccupationFields.result(rows));
-        });
+        doQuery(permissions.percentOccupationFields, {user: user}, done);
       }
 
     }
@@ -212,12 +168,7 @@ var query = {
   },
 
   test: function(user, method, done) {
-    var queryString = permissions[method].query(user);
-    console.log(queryString);
-    db.get().query(queryString, function(err, rows) {
-      if (err) return done(err);
-      done(null, permissions[method].result(rows));
-    });
+    doQuery(permissions[method], {user: user}, done);
   },
 
   locations: {
@@ -289,39 +240,19 @@ var query = {
   distribution: {
 
     age: function(user, done) {
-      var queryString = permissions.distributionAge.query(user);
-      console.log(queryString);
-      db.get().query(queryString, function(err, rows) {
-        if (err) return done(err);
-        done(null, permissions.distributionAge.result(rows));
-      });
+      doQuery(permissions.distributionAge, {user: user}, done);
     },
 
     sex: function(user, done) {
-      var queryString = permissions.distributionSex.query(user);
-      console.log(queryString);
-      db.get().query(queryString, function(err, rows) {
-        if (err) return done(err);
-        done(null, permissions.distributionSex.result(rows));
-      });
+      doQuery(permissions.distributionSex, {user: user}, done);
     },
 
     bmi: function(user, done) {
-      var queryString = permissions.distributionBMI.query(user);
-      console.log(queryString);
-      db.get().query(queryString, function(err, rows) {
-        if (err) return done(err);
-        done(null, permissions.distributionBMI.result(rows));
-      });
+      doQuery(permissions.distributionBMI, {user: user}, done);
     },
 
     timeOfSession: function(user, done) {
-      var queryString = permissions.distributionHours.query(user);
-      console.log(queryString);
-      db.get().query(queryString, function(err, rows) {
-        if (err) return done(err);
-        done(null, permissions.distributionHours.result(rows));
-      });
+      doQuery(permissions.distributionHours, {user: user}, done);
     }
 
   }

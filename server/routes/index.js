@@ -115,6 +115,13 @@ module.exports = function(passport) {
   });
 
   /* api */
+
+  router.get('/api/lastupdated', isAuthenticated, function(req, res){
+    queries.summary.last_updated(function(err, dt){
+      res.send(dt);
+    });
+  });
+
   router.get('/api/sidebar', isAuthenticated, function(req, res){
     res.send(permissions.sidebar.roles[req.user.roles[0]]);
   });
