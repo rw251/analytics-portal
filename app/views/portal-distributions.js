@@ -5,6 +5,17 @@ var portal = {
 
   show: function(){
 
+    //-- delete after this to enable --//
+    $('#page').html('<h1>Under construction</h1>');
+    $('#toggle-button').removeClass('home-screen');
+
+    $('.navbar-brand').removeClass("selected");
+    $('.navbar-brand[href*=portal]').addClass("selected");
+
+    sidebar.show();
+    return;
+    //-- --//
+
     var tmpl = require('../templates/distributions');
     var html = tmpl();
     $('#page').html(html);

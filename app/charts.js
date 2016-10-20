@@ -50,6 +50,7 @@ var chts = {
       var maxValue = 0;
       result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
+      ctx.parent().find('.chart-title').text(result.title);
       var myLineChart = new Chart(ctx, {
         type: maxValue === 0 ? 'empty' : 'bar',
         data: {
@@ -79,7 +80,11 @@ var chts = {
                 }
             ]
         },
-        options: {}
+        options: {
+          legend: {
+            display: false
+          }
+        }
       });
     });
   },
@@ -89,6 +94,7 @@ var chts = {
       var maxValue = 0;
       result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
+      ctx.parent().find('.chart-title').text(result.title);
       var myLineChart = new Chart(ctx, {
         type: maxValue === 0 ? 'empty' : 'bar',
         data: {
@@ -125,6 +131,9 @@ var chts = {
           onResize: function(cht) {
             //ctx = ctx[0].getContext('2d');
 
+          },
+          legend: {
+            display: false
           }
         }
       });
@@ -137,6 +146,7 @@ var chts = {
       var maxValue = 0;
       result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
+      ctx.parent().find('.chart-title').text(result.title);
       var myLineChart = new Chart(ctx, {
         type: maxValue === 0 ? 'empty' : 'bar',
         data: {
@@ -166,7 +176,11 @@ var chts = {
                 }
             ]
         },
-        options: {}
+        options: {
+          legend: {
+            display: false
+          }
+        }
       });
     });
   },
@@ -176,6 +190,7 @@ var chts = {
       var maxValue = 0;
       result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
+      ctx.parent().find('.chart-title').text(result.title);
       var myPieChart = new Chart(ctx, {
         type: maxValue === 0 ? 'empty' : 'pie',
         data: {
@@ -193,7 +208,11 @@ var chts = {
               ]
           }]
         },
-        options: {}
+        options: {
+          legend: {
+            display: false
+          }
+        }
       });
 
     });
@@ -204,31 +223,23 @@ var chts = {
 
   drawTop10Chart: function(category, ctx) {
     data.getTop10(category, function(result) {
+      var newdata = result.data.slice(0, 10);
+      ctx.parent().find('.chart-title').text(result.title);
       var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ["Top 10"], //result.data.map(function(v) { return v.name; }),
-          datasets: result.data.map(function(v,i) {
-            return {
-              label: v.name,
-              data: [v.value],
-              backgroundColor: [chts.colours[i].replace(/x/,"0.7")],
-              borderColor: [chts.colours[i].replace(/x/,"1")],
-              borderWidth: 1
-            };
-          })
-
-          /*datasets: [{
-            label: 'Top 10...',
-            data: result.data.map(function(v) { return v.value; }),
-            backgroundColor: ["rgba(166,206,227,0.7)", "rgba(31,120,180,0.7)", "rgba(178,223,138,0.7)", "rgba(51,160,44,0.7)", "rgba(251,154,153,0.7)", "rgba(227,26,28,0.7)", "rgba(253,191,111,0.7)", "rgba(255,127,0,0.7)", "rgba(202,178,214,0.7)", "rgba(106,61,154,0.7)"],
-            borderColor: ["rgba(166,206,227,1)", "rgba(31,120,180,1)", "rgba(178,223,138,1)", "rgba(51,160,44,1)", "rgba(251,154,153,1)", "rgba(227,26,28,1)", "rgba(253,191,111,1)", "rgba(255,127,0,1)", "rgba(202,178,214,1)", "rgba(106,61,154,1)"],
-            borderWidth: 1
-          }]*/
+          labels: newdata.map(function(v) { return v.name; }), //[result.title],
+          datasets: [
+            {
+              label: result.title,
+              data: newdata.map(function(v) { return v.value; }),
+              backgroundColor: 'rgba(80,80,83,0.8)'
+            }
+          ]
         },
         options: {
           legend: {
-            display: true
+            display: false
           },
           scales: {
             yAxes: [{

@@ -151,7 +151,7 @@ module.exports = function(passport) {
   });
 
   router.get('/api/top10/:category', isAuthenticated, function(req, res) {
-    queries.top10[req.params.category](function(err, val) {
+    queries.top10[req.params.category](req.user, function(err, val) {
       res.send(val);
     });
   });

@@ -292,7 +292,20 @@ var query = {
 
   top10: {
 
-    physios: function(done) {
+    sitesPerPatient: function(user, done) {
+      doQuery(permissions.sitesByPatients, { user: user }, done);
+    },
+    prescriptionsPerPatient: function(user, done) {
+      doQuery(permissions.prescriptionsByPatients, { user: user }, done);
+    },
+    physiosPerPatient: function(user, done) {
+      doQuery(permissions.physiosByNumberPatients, { user: user }, done);
+    },
+    occupationsPerPatient: function(user, done) {
+      doQuery(permissions.occupationsByPatients, { user: user }, done);
+    },
+
+    /*physios: function(done) {
       db.get().query("SELECT CONCAT(firstName, ' ', lastName) as name, UsersPerPhysio as value  FROM (SELECT physioId, count(*) as UsersPerPhysio FROM patient_physio GROUP BY physioId LIMIT 10) sub LEFT OUTER JOIN user_copy u ON u.id = physioId ORDER BY UsersPerPhysio desc", function(err, rows) {
         if (err) return done(err);
         done(null, { title: "Physios by patient", data: rows });
@@ -318,7 +331,7 @@ var query = {
         if (err) return done(err);
         done(null, { title: "Locations by patient", data: rows });
       });
-    }
+    }*/
 
   },
 

@@ -40,10 +40,10 @@ module.exports = {
   sidebar: {
     text: "The sidebar",
     roles: {
-      mujo: ["top10","locations","distributions","model"],
-      operator:["top10","distributions","model"],
-      provider: ["top10","locations","distributions","model"],
-      payor: ["top10","locations","distributions","model"]
+      mujo: ["top10", "locations", "distributions", "model"],
+      operator: ["top10", "distributions", "model"],
+      provider: ["top10", "locations", "distributions", "model"],
+      payor: ["top10", "locations", "distributions", "model"]
     }
   },
   numberPatients: {
@@ -119,10 +119,10 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      var outcomes = ["","discharged with improvement", "discharged without improvement", "referred to surgery", "failure"];
+      var outcomes = ["", "discharged with improvement", "discharged without improvement", "referred to surgery", "failure"];
       var rtn = {};
-      rows.forEach(function(v){
-        rtn[outcomes[v.outcum]]=v.cnt;
+      rows.forEach(function(v) {
+        rtn[outcomes[v.outcum]] = v.cnt;
       });
       return rtn;
     }
@@ -260,65 +260,6 @@ module.exports = {
       return rows[0].percent !== null ? rows[0].percent.toString() : 'NA';
     }
   },
-  loadFactor: {
-    text: "Load factor of devices",
-    roles: {
-      mujo: auth.yes,
-      operator: auth.no,
-      provider: auth.bySite,
-      payor: auth.bySite
-    },
-    query: function(dataObj) {
-      var timeAvailable = 1000 * 60 * 60 * 8 * 20;
-      var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
-      return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
-        '',
-        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
-      ]);
-    },
-    result: function(rows) {
-      return rows;
-    }
-  },
-  deviceUsage: {
-    text: "Total device usage",
-    roles: {
-      mujo: auth.yes,
-      operator: auth.no,
-      provider: auth.bySite,
-      payor: auth.bySite
-    },
-    query: function(dataObj) {
-      return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
-        '',
-        'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
-      ]);
-    },
-    result: function(rows) {
-      return rows;
-    }
-  },
-  mostCommonFault: {
-    text: "Most common reported fault",
-    roles: {
-      mujo: auth.yes,
-      operator: auth.no,
-      provider: auth.bySite,
-      payor: auth.bySite
-    },
-    query: function(dataObj) {
-      return q(this.roles, dataObj.user.roles[0], [
-        'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise WHERE skipReason IS NOT NULL GROUP BY skipReason ORDER BY COUNT(*) desc',
-        '',
-        'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId WHERE skipReason IS NOT NULL AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY skipReason ORDER BY COUNT(*) desc'
-      ]);
-    },
-    result: function(rows) {
-      return rows;
-    }
-  },
   locations: {
     text: "Locations of devices and users",
     roles: {
@@ -346,6 +287,9 @@ module.exports = {
       payor: auth.yes
     }
   },
+
+  /* distribution queries */
+
   distributionAge: {
     text: "Distribution of patients' ages",
     roles: {
@@ -428,6 +372,47 @@ module.exports = {
       return { title: "Usage hours", data: histogram(rows, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]) };
     }
   },
+
+  /* top 10 queries */
+
+  sitesByPatients: {
+    text: "The number of patients per site",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        "SELECT CASE WHEN s.name IS NULL THEN 'Unknown site' ELSE s.name END as name, count(*) as value FROM user_copy u LEFT OUTER JOIN site s on s.id = u.siteId GROUP by s.name ORDER BY count(*) DESC",
+        '',
+        ''
+      ]);
+    },
+    result: function(rows) {
+      return {title: "Sites by patient", data:rows};
+    }
+  },
+  prescriptionsByPatients: {
+    text: "The number of patients per perscription",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.byUser,
+      provider: auth.yes,
+      payor: auth.yes
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        "SELECT name, count(*) as value FROM prescription GROUP BY name ORDER BY count(*) DESC",
+        "",
+        ''
+      ]);
+    },
+    result: function(rows) {
+      return {title: "Prescriptions by patient", data:rows};
+    }
+  },
   physiosByNumberPatients: {
     text: "The number of patients per physio",
     roles: {
@@ -438,13 +423,13 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as cnt FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL GROUP BY physioId ORDER BY cnt desc",
-        "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as cnt FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL AND u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY physioId ORDER BY cnt desc",
+        "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as value FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL GROUP BY physioId ORDER BY count(*) desc",
+        "SELECT CONCAT(firstName, ' ', lastName) as name, count(*) as value FROM patient_physio pp INNER JOIN user_copy u ON u.id = pp.physioId WHERE end_date is NULL AND u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY physioId ORDER BY count(*) desc",
         ''
       ]);
     },
     result: function(rows) {
-      return rows;
+      return {title: "Physios by patient", data:rows};
     }
   },
   physiosByOutcome: {
@@ -463,11 +448,12 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return rows;
+      return {title: "Physios by outcome", data:rows};
     }
   },
-  physiosByDiagnosis: {
-    text: "The number of diagnoses per physio",
+
+  occupationsByPatients: {
+    text: "The number of patients per physio",
     roles: {
       mujo: auth.yes,
       operator: auth.byUser,
@@ -476,15 +462,119 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
+        "SELECT CASE WHEN occupation IS NULL THEN 'Unknown' ELSE occupation END as name, count(*) as value FROM patient_info_copy GROUP BY occupation ORDER BY count(*) DESC",
+        "",
+        ""
+      ]);
+    },
+    result: function(rows) {
+      return {title: "Occupations by patient", data:rows};
+    }
+  },
+  deviceByLoadFactor: {
+    text: "Load factor of devices",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      var timeAvailable = 1000 * 60 * 60 * 8 * 20;
+      var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
         '',
-        '',
-        ''
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
       return rows;
     }
   },
+  deviceByBearingLife: {
+    text: "Load factor of devices",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      var timeAvailable = 1000 * 60 * 60 * 8 * 20;
+      var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
+        '',
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+      ]);
+    },
+    result: function(rows) {
+      return rows;
+    }
+  },
+  deviceByCableLife: {
+    text: "Load factor of devices",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      var timeAvailable = 1000 * 60 * 60 * 8 * 20;
+      var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
+        '',
+        'SELECT exerciseStationId, 100*SUM(re.duration)/(' + timeAvailable + ') as percent  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+      ]);
+    },
+    result: function(rows) {
+      return rows;
+    }
+  },
+  deviceByAvgSessionTime: {
+    text: "Total device usage",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
+        '',
+        'SELECT exerciseStationId, SUM(re.duration) as duration FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+      ]);
+    },
+    result: function(rows) {
+      return rows;
+    }
+  },
+  mostCommonFaultByPatients: {
+    text: "Most common reported fault",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise WHERE skipReason IS NOT NULL GROUP BY skipReason ORDER BY COUNT(*) desc',
+        '',
+        'SELECT skipReason as reason, COUNT(*) as cnt FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId WHERE skipReason IS NOT NULL AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY skipReason ORDER BY COUNT(*) desc'
+      ]);
+    },
+    result: function(rows) {
+      return rows;
+    }
+  },
+
+  /* unused?? */
+
   physiosByCostEffectiveOutcomes: {
     text: "Physios ranked by cost effectiveness",
     roles: {
