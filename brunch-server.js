@@ -7,15 +7,16 @@ var bodyParser = require('body-parser');
 var config = require('./server/config.js');
 var db = require('./server/db/db.js');
 var mongodb = require('./server/db/mongodb.js');
-var DEBUG = false;
+var isDebug = true;
 
 module.exports = function(PORT, PATH, CALLBACK) {
 
-  if(DEBUG) mongodb.enableDebug();
+
+  if(isDebug) mongodb.enableDebug();
   mongodb.connect(mongodb.PRODUCTION_URI);
 
   if(config.aws_mysql.host) {
-    if(DEBUG) db.enableDebug();
+    if(isDebug) db.enableDebug();
     db.connect(db.MODE_PRODUCTION, config.aws_mysql, function(err) {
       if (err) {
         console.log('Unable to connect to MySQL.');

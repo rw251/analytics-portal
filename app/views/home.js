@@ -10,7 +10,7 @@ var home = {
     $('#toggle-button').addClass('home-screen');
 
     $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=home]').addClass("selected");
+    $('.navbar-brand:not([href*=portal])').addClass("selected");
 
     sidebar.hide();
   }

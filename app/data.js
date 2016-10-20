@@ -44,12 +44,12 @@ var data = {
     get('summary', function(value) {
       return callback(value);
     }, function() {
-      $.getJSON('/api/summary', function(data) {
+      $.getJSON('/api/summaryparallel', function(data) {
         localforage.setItem('summary', data);
         return callback(data);
       }).error(function(err) {
         console.log(err);
-        return callback({ "count": { "allpatients": "120", "activepatients": "65", "dischargedpatients": { "discharged with improvement": 27, "discharged without improvement": 11, "referred for surgery": 12, "failure": 5 }, "locations": "4", "physios": "18", "diagnoses": "6" }, "diagnostic": { "age": "59.4595", "occupation": "35.1351", "diagnoses": "35.1351" }, "updated": "2016-08-01T08:50:56.000Z" });
+        return callback({ "count": { "allpatients": "120", "activepatients": "65", "dischargedpatients": { "discharged with improvement": 27, "discharged without improvement": 11, "referred for surgery": 12, "failure": 5 }, "locations": "4", "physios": "18", "diagnoses": "6", "prescriptions" : "13" }, "diagnostic": { "age": "59.4595", "occupation": "35.1351", "diagnoses": "35.1351" }, "updated": "2016-08-01T08:50:56.000Z" });
       });
     });
 

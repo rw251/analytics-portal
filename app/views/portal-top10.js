@@ -15,7 +15,7 @@ var portal = {
 
       var tmpl = require('../templates/top10');
       var html = tmpl({ n: cats.length });
-      
+
       $('#page').fadeOut(1000, function() {
         $(this).html(html).fadeIn(1000);
 
@@ -34,7 +34,7 @@ var portal = {
     $('#toggle-button').removeClass('home-screen');
 
     $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href!="#home"]').addClass("selected");
+    $('.navbar-brand[href*=portal]').addClass("selected");
 
     sidebar.show();
 

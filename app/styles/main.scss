@@ -30,6 +30,10 @@
         display: none;
     }
 
+    .loading {
+      text-align: center;
+    }
+
     #map {
         height: 60vh;
         width: 100%;
@@ -46,6 +50,14 @@
     .hide-if-bit-small,
     .hide-if-super-small {
         display: none;
+    }
+
+    .navbar-toggle {
+      margin-right:0;
+    }
+
+    .navbar-top-links li:last-child {
+      margin-right:0;
     }
 
     #map {

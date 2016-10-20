@@ -133,6 +133,13 @@ module.exports = function(passport) {
     });
   });
 
+  router.get('/api/summaryparallel', isAuthenticated, function(req, res) {
+    queries.summary.allParallel(req.user, function(err, val) {
+      //if(err) throw err;
+      res.send(val);
+    });
+  });
+
   router.get('/api/locations', isAuthenticated, function(req,res){
     queries.locations.all(req.user, function(err,val){
       res.send(val);

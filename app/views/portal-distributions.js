@@ -11,7 +11,7 @@ var portal = {
     $('#toggle-button').removeClass('home-screen');
 
     $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href!="#home"]').addClass("selected");
+    $('.navbar-brand[href*=portal]').addClass("selected");
 
     charts.drawAgeDistribution($('#chart1'));
     charts.drawSexDistribution($('#chart2'));

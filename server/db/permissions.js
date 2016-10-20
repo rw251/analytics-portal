@@ -165,6 +165,25 @@ module.exports = {
       return rows[0].cnt.toString();
     }
   },
+  numberTotalPrescriptions: {
+    text: "Total number of prescriptions",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT count(*) as cnt FROM prescription',
+        '',
+        'SELECT count(*) as cnt FROM prescription WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
+      ]);
+    },
+    result: function(rows) {
+      return rows[0].cnt.toString();
+    }
+  },
   numberLocations: {
     text: "Total number of locations",
     roles: {

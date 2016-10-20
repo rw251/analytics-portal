@@ -26,7 +26,7 @@ exports.connect = function(mode, done) {
   var uri = mode === exports.MODE_TEST ? TEST_URI : PRODUCTION_URI;
   state.mode = mode;
 
-  if (state.debug) mongoose.set('debug', DEBUG);
+  if (state.debug) mongoose.set('debug', true);
 
   mongoose.connect(uri);
 
