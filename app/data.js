@@ -1,4 +1,5 @@
 var localforage = require('localforage');
+var VERSION = "0.0.1";
 
 var get = function(key, ifExists, ifNotExists) {
   localforage.getItem(key, function(err, value) {
@@ -14,10 +15,10 @@ var data = {
 
   getLastUpdated: function(callback) {
     $.getJSON('/api/lastupdated', function(data) {
-      localforage.getItem('lastupdated', function(err, value) {
-        if (err || !value || value !== data) {
+      localforage.getItem('detail', function(err, value) {
+        if (err || !value || !value.updated || !value.version || value.updated !== data || value.version != VERSION) {
           localforage.clear(function() {
-            localforage.setItem('lastupdated', data);
+            localforage.setItem('detail', { updated: data, version: VERSION});
             return callback(data);
           });
         } else {
