@@ -1,4 +1,5 @@
 var express = require('express');
+var compression = require('compression');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -44,6 +45,9 @@ module.exports = function(PORT, PATH, CALLBACK) {
 
 
   var app = express();
+
+  //enables gzip
+  app.use(compression());
 
   // view engine setup
   //app.set('views', path.join(__dirname, 'views'));
