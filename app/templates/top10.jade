@@ -5,7 +5,8 @@
   .row
     - for (var j = 0; j < 2; ++j) {
       .col-lg-6
-        .chart-title
+        .chart-title-wrapper
+          h4.chart-title
         canvas(id="chart"+(2*i+j))
     - }
 - }

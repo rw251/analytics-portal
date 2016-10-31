@@ -304,6 +304,24 @@ var query = {
     occupationsPerPatient: function(user, done) {
       doQuery(permissions.occupationsByPatients, { user: user }, done);
     },
+    mostCommonFaultByPatients: function(user, done) {
+      doQuery(permissions.mostCommonFaultByPatients, { user: user }, done);
+    },
+    physiosByOutcome: function(user, done) {
+      doQuery(permissions.physiosByOutcome, { user: user }, done);
+    },
+    deviceByAvgSessionTime: function(user, done) {
+      doQuery(permissions.deviceByAvgSessionTime, { user: user }, done);
+    },
+    deviceByBearingLife: function(user, done) {
+      doQuery(permissions.deviceByBearingLife, { user: user }, done);
+    },
+    deviceByCableLife: function(user, done) {
+      doQuery(permissions.deviceByCableLife, { user: user }, done);
+    },
+    deviceByLoadFactor: function(user, done) {
+      doQuery(permissions.deviceByLoadFactor, { user: user }, done);
+    }
 
     /*physios: function(done) {
       db.get().query("SELECT CONCAT(firstName, ' ', lastName) as name, UsersPerPhysio as value  FROM (SELECT physioId, count(*) as UsersPerPhysio FROM patient_physio GROUP BY physioId LIMIT 10) sub LEFT OUTER JOIN user_copy u ON u.id = physioId ORDER BY UsersPerPhysio desc", function(err, rows) {

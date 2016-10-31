@@ -47,6 +47,7 @@ Chart.controllers.empty = Chart.DatasetController.extend({
    no bigger than 'maxwidth', breaks are made at complete words.*/
 
 function formatLabel(str, maxwidth) {
+  if(typeof(str)!=="string") return str;
   var sections = [];
   var words = str.split(" ");
   var temp = "";
