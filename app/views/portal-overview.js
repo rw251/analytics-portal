@@ -19,7 +19,7 @@ var portal = {
       $('#page').fadeOut(1000, function(){
         $(this).html(html).fadeIn(1000);
 
-        ["physios", "prescriptions"].forEach(function(v, i) {
+        ["sitesPerPatient", "physiosPerPatient"].forEach(function(v, i) {
           charts.drawTop10Chart(v, $('#chartTop' + i));
         });
 

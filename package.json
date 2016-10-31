@@ -52,6 +52,7 @@
     "mysql": "^2.11.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
+    "redbird": "^0.6.5",
     "serve-favicon": "^2.3.0"
   },
   "engines": {

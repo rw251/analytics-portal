@@ -43,6 +43,48 @@ Chart.controllers.empty = Chart.DatasetController.extend({
   buildOrUpdateElements: function() {}
 });
 
+/* takes a string phrase and breaks it into separate phrases
+   no bigger than 'maxwidth', breaks are made at complete words.*/
+
+function formatLabel(str, maxwidth) {
+  var sections = [];
+  var words = str.split(" ");
+  var temp = "";
+
+  words.forEach(function(item, index) {
+    if (temp.length > 0) {
+      var concat = temp + ' ' + item;
+
+      if (concat.length > maxwidth) {
+        sections.push(temp);
+        temp = "";
+      } else {
+        if (index == (words.length - 1)) {
+          sections.push(concat);
+          return;
+        } else {
+          temp = concat;
+          return;
+        }
+      }
+    }
+
+    if (index == (words.length - 1)) {
+      sections.push(item);
+      return;
+    }
+
+    if (item.length < maxwidth) {
+      temp = item;
+    } else {
+      sections.push(item);
+    }
+
+  });
+
+  return sections;
+}
+
 var chts = {
   drawAgeDistribution: function(ctx) {
     data.getAgeDistribution(function(result) {
@@ -228,7 +270,7 @@ var chts = {
       var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: newdata.map(function(v) { return v.name; }), //[result.title],
+          labels: newdata.map(function(v) { return formatLabel(v.name, 20); }), //[result.title],
           datasets: [
             {
               label: result.title,
