@@ -405,7 +405,7 @@ module.exports = {
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
         "SELECT name, count(*) as value FROM prescription GROUP BY name ORDER BY count(*) DESC",
-        "",
+        "SELECT name, count(*) as value FROM prescription p INNER JOIN user_copy u on u.id = p.createdBy WHERE u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY name ORDER BY count(*) DESC",
         ''
       ]);
     },
@@ -417,7 +417,7 @@ module.exports = {
     text: "The number of patients per physio",
     roles: {
       mujo: auth.yes,
-      operator: auth.byUser,
+      operator: auth.no,
       provider: auth.yes,
       payor: auth.yes
     },
@@ -455,7 +455,7 @@ module.exports = {
     text: "The number of patients per occupation",
     roles: {
       mujo: auth.yes,
-      operator: auth.byUser,
+      operator: auth.yes,
       provider: auth.yes,
       payor: auth.yes
     },
@@ -488,11 +488,11 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return {title: "Devices by load factor", data:rows};
+      return {title: "Devices by load factor (% utilisation in last 6 months)", data:rows};
     }
   },
   deviceByBearingLife: {
-    text: "Load factor of devices",
+    text: "Devices by bearing life",
     roles: {
       mujo: auth.yes,
       operator: auth.no,
@@ -500,20 +500,19 @@ module.exports = {
       payor: auth.bySite
     },
     query: function(dataObj) {
-      var timeAvailable = 1000 * 60 * 60 * 8 * 20;
-      var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
+      var totalLife = 25000; //hours
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId as name, 100*SUM(re.duration)/(' + timeAvailable + ') as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
+        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId as name, 100*SUM(re.duration)/(' + timeAvailable + ') as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
-      return {title: "Devices by bearing life", data:rows};
+      return {title: "Devices by bearing life (hours remaining)", data:rows};
     }
   },
   deviceByCableLife: {
-    text: "Load factor of devices",
+    text: "Devices by cable life",
     roles: {
       mujo: auth.yes,
       operator: auth.no,
@@ -521,16 +520,15 @@ module.exports = {
       payor: auth.bySite
     },
     query: function(dataObj) {
-      var timeAvailable = 1000 * 60 * 60 * 8 * 20;
-      var timePeriod = "INTERVAL 6 MONTH"; //see mysql DATE_SUB - http://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-sub
+      var totalLife = 15000; //hours
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId as name, 100*SUM(re.duration)/(' + timeAvailable + ') as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') GROUP BY exerciseStationId',
+        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId as name, 100*SUM(re.duration)/(' + timeAvailable + ') as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE re.startTime > DATE_SUB(now(), ' + timePeriod + ') AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
-      return {title: "Devices by cable life", data:rows};
+      return {title: "Devices by cable life (hours remaining)", data:rows};
     }
   },
   deviceByAvgSessionTime: {
@@ -543,13 +541,13 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId as name, SUM(re.duration) as value FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
+        'SELECT exerciseStationId as name, SUM(re.duration)/(1000*60*COUNT(*)) as value FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId as name, SUM(re.duration) as value FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId as name, SUM(re.duration)/(1000*60*COUNT(*)) as value FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
-      return {title: "Devices by average session time", data:rows};
+      return {title: "Devices by average session time in minutes", data:rows};
     }
   },
   mostCommonFaultByPatients: {
