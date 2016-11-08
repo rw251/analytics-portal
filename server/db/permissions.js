@@ -1,5 +1,6 @@
 var auth = require('./auth.js'),
-  db = require('./db.js');
+  db = require('./db.js'),
+  lookup = require('../controllers/lookup.js');
 
 var q = function(roles, role, yesUserSiteNone) {
   if (roles[role] === auth.yes) {
@@ -361,16 +362,17 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT gender, count(*) as num FROM patient_info_copy WHERE gender is not null GROUP BY gender ORDER BY gender desc',
-        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE gender is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email) + ' GROUP BY gender ORDER BY gender desc',
-        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE gender is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY gender ORDER BY gender desc'
+        'SELECT gender, count(*) as num FROM patient_info_copy WHERE gender is not null GROUP BY gender ORDER BY gender',
+        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE gender is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email) + ' GROUP BY gender ORDER BY gender',
+        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE gender is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY gender ORDER BY gender'
       ]);
     },
     result: function(rows) {
       return {
         title: "Sex distribution",
         data: rows.map(function(v) {
-          if (v.gender === 0) return { label: "Male", value: v.num, color:"#FF6384",highlight: "#FF6384" };
+          //	0 is female and 1 is male. - email from Asim 8th November 2016
+          if (v.gender === 1) return { label: "Male", value: v.num, color:"#FF6384",highlight: "#FF6384" };
           else return { label: "Female", value: v.num, color:"#36A2EB",highlight: "#36A2EB" };
         })
       };
@@ -437,9 +439,9 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription WHERE frequencyPeriod is not null AND frequency is not null",
-        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription WHERE frequencyPeriod is not null AND frequency is not null",
-        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription WHERE frequencyPeriod is not null AND frequency is not null"
+        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod is not null AND frequency is not null",
+        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod is not null AND frequency is not null",
+        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod is not null AND frequency is not null"
       ]);
     },
     result: function(rows) {
@@ -562,6 +564,10 @@ module.exports = {
       ]);
     },
     result: function(rows) {
+      rows = rows.map(function(v){
+        v.name = lookup.cache("ExerciseStation")[v.name];
+        return v;
+      });
       return {title: "Devices by load factor (% utilisation in last 6 months)", data:rows};
     }
   },
@@ -582,6 +588,10 @@ module.exports = {
       ]);
     },
     result: function(rows) {
+      rows = rows.map(function(v){
+        v.name = lookup.cache("ExerciseStation")[v.name];
+        return v;
+      });
       return {title: "Devices by bearing life (hours remaining)", data:rows};
     }
   },
@@ -602,6 +612,10 @@ module.exports = {
       ]);
     },
     result: function(rows) {
+      rows = rows.map(function(v){
+        v.name = lookup.cache("ExerciseStation")[v.name];
+        return v;
+      });
       return {title: "Devices by cable life (hours remaining)", data:rows};
     }
   },
@@ -621,6 +635,10 @@ module.exports = {
       ]);
     },
     result: function(rows) {
+      rows = rows.map(function(v){
+        v.name = lookup.cache("ExerciseStation")[v.name];
+        return v;
+      });
       return {title: "Devices by average session time in minutes", data:rows};
     }
   },
@@ -640,6 +658,10 @@ module.exports = {
       ]);
     },
     result: function(rows) {
+      rows = rows.map(function(v){
+        v.name = lookup.cache("SkipReason")[v.name];
+        return v;
+      });
       return {title: "Most common failure reason", data:rows};
     }
   },

@@ -14,7 +14,12 @@ module.exports = function(PORT, PATH, CALLBACK) {
 
 
   if(isDebug) mongodb.enableDebug();
-  mongodb.connect(mongodb.PRODUCTION_URI);
+  mongodb.connect(mongodb.PRODUCTION_URI, function(){
+    var lookup = require('./server/controllers/lookup.js');
+    lookup.getAll(function(err){
+      if(!err) console.log("Lookups cached");
+    });
+  });
 
   if(config.aws_mysql.host) {
     if(isDebug) db.enableDebug();

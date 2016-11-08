@@ -1,0 +1,18 @@
+include ../partials/head.jade
+include ../mixins/configItem.jade
+.container-narrow.starter-template-high
+  .btn-toolbar
+    a.btn.btn-info(href='/portal') Back to portal
+  each item in Object.keys(lookup)
+    +configItem(item, lookup[item])
+  hr
+  form(action='/config',  method='post')
+    fieldset
+      legend New config group
+      label(for='name') Config name:
+      input.form-control(type='text', name='name', placeholder='Config name', required='')
+    button.btn.btn-purple.btn-block.history(type='submit')
+      | Add new config group 
+      span.fa.fa-arrow-circle-right
+
+    

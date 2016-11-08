@@ -6,6 +6,7 @@ var test = require('../models/test.js');
 var queries = require('../db/queries.js');
 var users = require('../controllers/users.js');
 var permissions = require('../db/permissions.js');
+var lookup = require('../controllers/lookup.js');
 
 var isAuthenticated = function(req, res, next) {
   // if user is authenticated in the session, call the next() to call the next request handler
@@ -111,6 +112,23 @@ module.exports = function(passport) {
       } else {
         res.redirect('/admin');
       }
+    });
+  });
+
+  router.get('/config', isAuthenticated, isAdmin, function(req, res) {
+    res.render('pages/config.jade', { lookup: lookup.cache() });
+  });
+
+  router.post('/config', isAuthenticated, isAdmin, function(req, res) {
+    lookup.addGroup(req.body.name, function(err){
+      res.render('pages/config.jade', { lookup: lookup.cache() });
+    });
+  });
+
+  router.post('/config/:name', isAuthenticated, isAdmin, function(req, res) {
+    lookup.updateGroup(req.params.name, req.body.newtext, function(err){
+      //res.render('pages/config.jade', { lookup: lookup.cache() });
+      res.redirect('/config');
     });
   });
 

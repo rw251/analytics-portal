@@ -1,0 +1,9 @@
+mixin configItem(name, obj)
+  h3= name
+  form(action='/config/'+name, method='post')
+    textarea.form-control(name='newtext')
+      each key in Object.keys(obj)
+        = key + "|" + obj[key] + "\n"
+    button.btn.btn-purple.btn-block.history(type='submit')
+      | Save changes
+      span.fa.fa-arrow-circle-right

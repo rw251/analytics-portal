@@ -275,6 +275,23 @@ var chts = {
           }
         }
       });
+
+      //populate table
+      var tmpl = require('./templates/top10table');
+      var html = tmpl({ items: result.data });
+      ctx.parent().find('.table-wrapper').hide().html(html);
+      ctx.parent().find('.show-table').off('click').on('click', function(){
+        if($(this).text()==="Show as table"){
+          $(this).text("Show as chart").removeClass('btn-info').addClass('btn-success');
+          var currentCanvasHeight = $(this).parent().parent().find("canvas").height();
+          $(this).parent().parent().find("canvas").hide();
+          $(this).parent().parent().find(".table-wrapper").show().css('max-height', currentCanvasHeight);
+        } else {
+          $(this).text("Show as table").removeClass('btn-success').addClass('btn-info');
+          $(this).parent().parent().find("canvas").show();
+          $(this).parent().parent().find(".table-wrapper").hide().css('max-height', '');
+        }
+      });
     });
   }
 

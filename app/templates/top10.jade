@@ -1,12 +1,12 @@
+include mixins/top10item
+
 .row
   .col-lg-12
     h1.page-header Top 10 (under construction)
 - for (var i = 0; i < n/2; ++i) {
   .row
     - for (var j = 0; j < 2; ++j) {
-      .col-lg-6
-        .chart-title-wrapper
-          h4.chart-title
-        canvas(id="chart"+(2*i+j))
+      .col-lg-6.padding-0
+        +top10Item("chart"+(2*i+j))
     - }
 - }
