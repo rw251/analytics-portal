@@ -47,7 +47,7 @@ Chart.controllers.empty = Chart.DatasetController.extend({
    no bigger than 'maxwidth', breaks are made at complete words.*/
 
 function formatLabel(str, maxwidth) {
-  if(typeof(str)!=="string") return str;
+  if (typeof(str) !== "string") return str;
   var sections = [];
   var words = str.split(" ");
   var temp = "";
@@ -86,145 +86,79 @@ function formatLabel(str, maxwidth) {
   return sections;
 }
 
+var drawBarDistribution = function(ctx, result) {
+  var maxValue = 0;
+  result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
+
+  ctx.parent().find('.chart-title').text(result.chart.title);
+
+  var myLineChart = new Chart(ctx, {
+    type: maxValue === 0 ? 'empty' : 'bar',
+    data: {
+      labels: result.data.map(function(v) { return v.label; }),
+      datasets: [
+        {
+          label: result.chart.title,
+          fill: false,
+          lineTension: 0.4,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderCapStyle: 'butt',
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: 'miter',
+          pointBorderColor: "rgba(75,192,192,1)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(75,192,192,1)",
+          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: result.data.map(function(v) { return v.value; }),
+          spanGaps: false,
+            }
+        ]
+    },
+    options: {
+      legend: {
+        display: false
+      },
+      scales: maxValue === 0 ? {} : {
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: result.chart.yTitle
+          }
+        }],
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: result.chart.xTitle
+          }
+          }]
+      }
+    }
+  });
+};
+
 var chts = {
   drawAgeDistribution: function(ctx) {
     data.getAgeDistribution(function(result) {
-
-      var maxValue = 0;
-      result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
-
-      ctx.parent().find('.chart-title').text(result.title);
-      var myLineChart = new Chart(ctx, {
-        type: maxValue === 0 ? 'empty' : 'bar',
-        data: {
-          labels: result.data.map(function(v) { return v.label; }),
-          datasets: [
-            {
-              label: result.title,
-              fill: false,
-              lineTension: 0.4,
-              backgroundColor: "rgba(75,192,192,0.4)",
-              borderColor: "rgba(75,192,192,1)",
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: "rgba(75,192,192,1)",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "rgba(75,192,192,1)",
-              pointHoverBorderColor: "rgba(220,220,220,1)",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: result.data.map(function(v) { return v.value; }),
-              spanGaps: false,
-                }
-            ]
-        },
-        options: {
-          legend: {
-            display: false
-          }
-        }
-      });
+      drawBarDistribution(ctx, result);
     });
   },
 
   drawBMIDistribution: function(ctx) {
     data.getBMIDistribution(function(result) {
-      var maxValue = 0;
-      result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
-
-      ctx.parent().find('.chart-title').text(result.title);
-      var myLineChart = new Chart(ctx, {
-        type: maxValue === 0 ? 'empty' : 'bar',
-        data: {
-          labels: result.data.map(function(v) { return v.label; }),
-          datasets: [
-            {
-              label: result.title,
-              fill: false,
-              lineTension: 0.4,
-              backgroundColor: "rgba(192,75,192,0.4)",
-              borderColor: "rgba(192,75,192,1)",
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: "rgba(192,75,192,1)",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "rgba(192,75,192,1)",
-              pointHoverBorderColor: "rgba(220,220,220,1)",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: result.data.map(function(v) { return v.value; }),
-              spanGaps: false,
-                }
-            ]
-        },
-        options: {
-          onAnimationComplete: function() {
-            alert('animation complete');
-          },
-          onResize: function(cht) {
-            //ctx = ctx[0].getContext('2d');
-
-          },
-          legend: {
-            display: false
-          }
-        }
-      });
-
+      drawBarDistribution(ctx, result);
     });
   },
 
   drawUsageHoursDistribution: function(ctx) {
     data.getUsageHoursDistribution(function(result) {
-      var maxValue = 0;
-      result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
-
-      ctx.parent().find('.chart-title').text(result.title);
-      var myLineChart = new Chart(ctx, {
-        type: maxValue === 0 ? 'empty' : 'bar',
-        data: {
-          labels: result.data.map(function(v) { return v.label; }),
-          datasets: [
-            {
-              label: result.title,
-              fill: false,
-              lineTension: 0.4,
-              backgroundColor: "rgba(192,75,192,0.4)",
-              borderColor: "rgba(192,75,192,1)",
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: "rgba(192,75,192,1)",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "rgba(192,75,192,1)",
-              pointHoverBorderColor: "rgba(220,220,220,1)",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: result.data.map(function(v) { return v.value; }),
-              spanGaps: false,
-                }
-            ]
-        },
-        options: {
-          legend: {
-            display: false
-          }
-        }
-      });
+      drawBarDistribution(ctx, result);
     });
   },
 
@@ -234,7 +168,13 @@ var chts = {
       result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
       ctx.parent().find('.chart-title').text(result.title);
-      var myPieChart = new Chart(ctx, {
+      var origCtx = ctx;
+      var canvas = ctx[0];
+      ctx = canvas.getContext("2d");
+      var midX = canvas.width / 2;
+      var midY = canvas.height / 2;
+
+      var myPieChart = new Chart(origCtx, {
         type: maxValue === 0 ? 'empty' : 'pie',
         data: {
           labels: result.data.map(function(v) { return v.label; }),
@@ -242,24 +182,63 @@ var chts = {
             {
               data: result.data.map(function(v) { return v.value; }),
               backgroundColor: [
-                  "#FF6384",
-                  "#36A2EB"
-              ],
-              hoverBackgroundColor: [
-                  "#FF6384",
-                  "#36A2EB"
+                "#FF6384",
+                "#36A2EB"
               ]
           }]
         },
         options: {
           legend: {
             display: false
+          },
+          tooltips: {
+            enabled: false
+          },
+          animation: {
+            onComplete: function() {
+              var ctx = this.chart.ctx;
+              ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+
+              this.data.datasets.forEach(function(dataset) {
+
+                for (var i = 0; i < dataset.data.length; i++) {
+                  var textSize = canvas.width / 100;
+                  ctx.font = textSize + "px Verdana";
+                  var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                    total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+                    mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius) / 2,
+                    start_angle = model.startAngle,
+                    end_angle = model.endAngle,
+                    mid_angle = start_angle + (end_angle - start_angle) / 2;
+
+                  var x = mid_radius * Math.cos(mid_angle);
+                  var y = mid_radius * Math.sin(mid_angle);
+
+                  ctx.fillStyle = '#fff';
+                  if (i == 3) { // Darker text color for lighter background
+                    ctx.fillStyle = '#444';
+                  }
+                  var percent = " (" + String(Math.round(dataset.data[i] / total * 100)) + "%)";
+                  ctx.fillText(model.label, model.x + x, model.y + y);
+                  ctx.fillText(dataset.data[i] + percent, model.x + x, model.y + y + (textSize*1.3));
+
+                }
+              });
+            }
           }
         }
       });
 
     });
 
+  },
+
+  drawExerciseFrequencyDistribution: function(ctx) {
+    data.getExerciseFrequencyDistribution(function(result) {
+      drawBarDistribution(ctx, result);
+    });
   },
 
   colours: ["rgba(166,206,227,x)", "rgba(31,120,180,x)", "rgba(178,223,138,x)", "rgba(51,160,44,x)", "rgba(251,154,153,x)", "rgba(227,26,28,x)", "rgba(253,191,111,x)", "rgba(255,127,0,x)", "rgba(202,178,214,x)", "rgba(106,61,154,x)"],

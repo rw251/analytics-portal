@@ -33,7 +33,7 @@ var query = {
 
       var rtn = { count: {}, diagnostic: {} };
       var counter = 0;
-      var total = 11;
+      var total = 13;
       var hasErrored = false;
 
       query.summary.last_updated(function(err, lu) {
@@ -106,6 +106,16 @@ var query = {
         counter++;
         if (counter === total) return done(null, rtn);
       });
+      query.summary.count.diagnosesUnique(user, function(err, diags) {
+        if (hasErrored) return;
+        if (err && err.message !== "NOAUTH") {
+          hasErrored = true;
+          return done(err);
+        }
+        if (!err) rtn.count.diagnosesUnique = diags;
+        counter++;
+        if (counter === total) return done(null, rtn);
+      });
       query.summary.count.prescriptions(user, function(err, rxs) {
         if (hasErrored) return;
         if (err && err.message !== "NOAUTH") {
@@ -113,6 +123,16 @@ var query = {
           return done(err);
         }
         if (!err) rtn.count.prescriptions = rxs;
+        counter++;
+        if (counter === total) return done(null, rtn);
+      });
+      query.summary.count.prescriptionsUnique(user, function(err, rxs) {
+        if (hasErrored) return;
+        if (err && err.message !== "NOAUTH") {
+          hasErrored = true;
+          return done(err);
+        }
+        if (!err) rtn.count.prescriptionsUnique = rxs;
         counter++;
         if (counter === total) return done(null, rtn);
       });
@@ -221,7 +241,11 @@ var query = {
       },
 
       diagnoses: function(user, done) {
-        doQuery(permissions.numberDiagnoses, { user: user }, done);
+        doQuery(permissions.numberTotalDiagnoses, { user: user }, done);
+      },
+
+      diagnosesUnique: function(user, done) {
+        doQuery(permissions.numberUniqueDiagnoses, { user: user }, done);
       },
 
       physios: function(user, done) {
@@ -230,6 +254,10 @@ var query = {
 
       prescriptions: function(user, done) {
         doQuery(permissions.numberTotalPrescriptions, { user: user }, done);
+      },
+
+      prescriptionsUnique: function(user, done) {
+        doQuery(permissions.numberUniquePrescriptions, { user: user }, done);
       }
 
     }
@@ -323,34 +351,6 @@ var query = {
       doQuery(permissions.deviceByLoadFactor, { user: user }, done);
     }
 
-    /*physios: function(done) {
-      db.get().query("SELECT CONCAT(firstName, ' ', lastName) as name, UsersPerPhysio as value  FROM (SELECT physioId, count(*) as UsersPerPhysio FROM patient_physio GROUP BY physioId LIMIT 10) sub LEFT OUTER JOIN user_copy u ON u.id = physioId ORDER BY UsersPerPhysio desc", function(err, rows) {
-        if (err) return done(err);
-        done(null, { title: "Physios by patient", data: rows });
-      });
-    },
-
-    prescriptions: function(done) {
-      db.get().query('SELECT name, count(*) as value FROM prescription GROUP BY name ORDER BY count(*) desc LIMIT 10', function(err, rows) {
-        if (err) return done(err);
-        done(null, { title: "Prescriptions by patient", data: rows });
-      });
-    },
-
-    diagnoses: function(done) {
-      db.get().query('SELECT diagnosis as name, COUNT(*) as value FROM patient_info_copy WHERE diagnosis is not null AND diagnosis != "" GROUP BY diagnosis ORDER BY count(*) desc LIMIT 10', function(err, rows) {
-        if (err) return done(err);
-        done(null, { title: "Diagnoses by patient", data: rows });
-      });
-    },
-
-    locations: function(done) {
-      db.get().query('SELECT s.name, count(*) as value FROM user_copy u INNER JOIN site s ON s.id = u.siteId GROUP BY s.name ORDER BY count(*) desc LIMIT 10', function(err, rows) {
-        if (err) return done(err);
-        done(null, { title: "Locations by patient", data: rows });
-      });
-    }*/
-
   },
 
   distribution: {
@@ -369,6 +369,10 @@ var query = {
 
     timeOfSession: function(user, done) {
       doQuery(permissions.distributionHours, { user: user }, done);
+    },
+
+    exerciseFrequency: function(user, done) {
+      doQuery(permissions.distributionExerciseFrequency, { user: user }, done);
     }
 
   }

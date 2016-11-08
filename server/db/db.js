@@ -4,7 +4,7 @@ var state = {
   pool: null
 };
 
-var debug = false;
+var debug = false, ready = false;
 
 exports.MODE_TEST = 'MODE_TEST';
 exports.MODE_PRODUCTION = 'MODE_PRODUCTION';
@@ -17,11 +17,16 @@ exports.isDebug = function() {
   return debug;
 };
 
+exports.isReady = function() {
+  return ready;
+};
+
 exports.connect = function(mode, config, done) {
   if(debug) config.debug = ['ComQueryPacket', 'RowDataPacket'];
   //if(mode === exports.MODE_TEST) config=
   state.pool = mysql.createPool(config);
 
+  ready = true;
   done();
 };
 
@@ -39,6 +44,7 @@ exports.fakeDB = function(done) {
 
   };
 
+  ready = true;
   done();
 };
 

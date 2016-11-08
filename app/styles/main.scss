@@ -11,6 +11,20 @@
     position: fixed !important;
 }
 
+.chart-wrapper {
+  border: 1px dashed darkgrey;
+  padding:5px;
+  margin:5px;
+}
+
+.chart-title-wrapper {
+  text-align: center;
+}
+
+.padding-0 {
+  padding:0;
+}
+
 #map {
     height: 50vh;
     width: 100%;

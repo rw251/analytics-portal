@@ -19,7 +19,7 @@
               span= " " + id
       - if(count.locations || count.physios || count.diagnoses || count.prescriptions)
         li
-          span= (count.locations ? count.locations + ' locations, ' : '') + (count.physios ? count.physios + ' physios, ' : '') + (count.prescriptions ? count.prescriptions + ' prescriptions, ' : '') + (count.diagnoses ? count.diagnoses + ' diagnoses' : '')
+          span= (count.locations ? count.locations + ' locations, ' : '') + (count.physios ? count.physios + ' physios, ' : '') + (count.prescriptions ? count.prescriptions + ' prescriptions ' + (count.prescriptionsUnique ? '('+ count.prescriptionsUnique + ' unique), ' : ', ') : '') + (count.diagnoses ? count.diagnoses + ' diagnoses ' + (count.diagnosesUnique ? '('+ count.diagnosesUnique + ' unique)' : '') : '')
       - if(diagnostic)
         - var ks = Object.keys(diagnostic)
         - if(ks.length>0)
@@ -38,6 +38,9 @@
   .col-lg-12
     h1.page-header Top 10
 .row
+  .col-lg-12
+    a(href="#top10") Show more...
+.row
   .col-lg-6
     .chart-title-wrapper
       h4.chart-title
@@ -48,10 +51,10 @@
     canvas#chartTop1
 .row
   .col-lg-12
-    a(href="#top10") Show more...
+    h1.page-header Distributions
 .row
   .col-lg-12
-    h1.page-header Distributions
+    a(href="#distributions") Show more...
 .row
   .col-lg-6
     .chart-title-wrapper
@@ -61,6 +64,3 @@
     .chart-title-wrapper
       h4.chart-title
     canvas#chartDist1
-.row
-  .col-lg-12
-    a(href="#distributions") Show more...

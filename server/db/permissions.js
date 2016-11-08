@@ -113,9 +113,9 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' GROUP BY outcum",
+        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\\\[OUTCOME\\\\][^\\\\[]+\\\\[/OUTCOME\\\\]' GROUP BY outcum",
         '',
-        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' AND userId IN (SELECT userId FROM prescription WHERE siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ") GROUP BY userId) GROUP BY outcum"
+        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\\\[OUTCOME\\\\][^\\\\[]+\\\\[/OUTCOME\\\\]' AND userId IN (SELECT userId FROM prescription WHERE siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ") GROUP BY userId) GROUP BY outcum"
       ]);
     },
     result: function(rows) {
@@ -146,8 +146,27 @@ module.exports = {
       return rows[0].cnt.toString();
     }
   },
-  numberDiagnoses: {
+  numberTotalDiagnoses: {
     text: "Total number of diagnoses",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT count(*) as cnt FROM patient_info_copy WHERE diagnosis is not null AND diagnosis != ""',
+        'SELECT count(*) as cnt FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE diagnosis is not null AND diagnosis != "" AND email = ' + db.get().escape(dataObj.user.email) + ')',
+        'SELECT count(*) as cnt FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE diagnosis is not null AND diagnosis != ""  AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
+      ]);
+    },
+    result: function(rows) {
+      return rows[0].cnt.toString();
+    }
+  },
+  numberUniqueDiagnoses: {
+    text: "Total number of unique diagnoses",
     roles: {
       mujo: auth.yes,
       operator: auth.no,
@@ -178,6 +197,25 @@ module.exports = {
         'SELECT count(*) as cnt FROM prescription',
         '',
         'SELECT count(*) as cnt FROM prescription WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
+      ]);
+    },
+    result: function(rows) {
+      return rows[0].cnt.toString();
+    }
+  },
+  numberUniquePrescriptions: {
+    text: "Total number of unique prescriptions",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.no,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        'SELECT COUNT(*) as cnt FROM (SELECT name FROM prescription GROUP BY name) sub',
+        '',
+        'SELECT count(*) as cnt FROM (SELECT name FROM prescription WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY name) sub',
       ]);
     },
     result: function(rows) {
@@ -291,7 +329,11 @@ module.exports = {
   /* distribution queries */
 
   distributionAge: {
-    text: "Distribution of patients' ages",
+    chart:{
+      title: "Age distribution",
+      xTitle: "Age (years)",
+      yTitle: "# patients"
+    },
     roles: {
       mujo: auth.yes,
       operator: auth.yes,
@@ -306,7 +348,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return { title: "Age distribution", data: histogram(rows, ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"]) };
+      return { chart: this.chart,  data: histogram(rows, ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"]) };
     }
   },
   distributionSex: {
@@ -319,23 +361,27 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT gender, count(*) as num FROM patient_info_copy WHERE gender is not null GROUP BY gender',
-        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE gender is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email) + ' GROUP BY gender',
-        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE gender is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY gender'
+        'SELECT gender, count(*) as num FROM patient_info_copy WHERE gender is not null GROUP BY gender ORDER BY gender desc',
+        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN patient_physio pp on pp.userId = p.userId INNER JOIN user_copy u on u.id = pp.physioId WHERE gender is not null AND (outcome is null OR outcome = "") AND u.email = ' + db.get().escape(dataObj.user.email) + ' GROUP BY gender ORDER BY gender desc',
+        'SELECT gender, count(*) as num FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId WHERE gender is not null AND siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY gender ORDER BY gender desc'
       ]);
     },
     result: function(rows) {
       return {
         title: "Sex distribution",
         data: rows.map(function(v) {
-          if (v.gender === 0) return { label: "Male", value: v.num };
-          else return { label: "Female", value: v.num };
+          if (v.gender === 0) return { label: "Male", value: v.num, color:"#FF6384",highlight: "#FF6384" };
+          else return { label: "Female", value: v.num, color:"#36A2EB",highlight: "#36A2EB" };
         })
       };
     }
   },
   distributionBMI: {
-    text: "Distribution of patients' BMIs",
+    chart:{
+      title: "BMI distribution",
+      xTitle: "BMI",
+      yTitle: "# patients"
+    },
     roles: {
       mujo: auth.yes,
       operator: auth.yes,
@@ -350,11 +396,15 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return { title: "BMI distribution", data: histogram(rows, ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44"]) };
+      return { chart: this.chart,  data: histogram(rows, ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44"]) };
     }
   },
   distributionHours: {
-    text: "Distribution of hours of use",
+    chart:{
+      title: "Usage hours",
+      xTitle: "Time (24h clock)",
+      yTitle: "# patients"
+    },
     roles: {
       mujo: auth.yes,
       operator: auth.yes,
@@ -369,7 +419,31 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return { title: "Usage hours", data: histogram(rows, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]) };
+      return { chart: this.chart,  data: histogram(rows, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]) };
+    }
+  },
+
+  distributionExerciseFrequency: {
+    chart:{
+      title: "Prescribed exercise frequency",
+      xTitle: "Sessions per week",
+      yTitle: "# patients"
+    },
+    roles: {
+      mujo: auth.yes,
+      operator: auth.byUser,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription WHERE frequencyPeriod is not null AND frequency is not null",
+        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription WHERE frequencyPeriod is not null AND frequency is not null",
+        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription WHERE frequencyPeriod is not null AND frequency is not null"
+      ]);
+    },
+    result: function(rows) {
+      return { chart: this.chart, data: histogram(rows, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"]) };
     }
   },
 
@@ -436,15 +510,15 @@ module.exports = {
     text: "The number of succesful outcomes (as a percentage?) per physio",
     roles: {
       mujo: auth.yes,
-      operator: auth.byUser,
+      operator: auth.no,
       provider: auth.yes,
       payor: auth.yes
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
+        "SELECT name, 100*COUNT(IF(outcome=1,1,NULL)) / COUNT(IF(outcome=2,1,NULL)) as value FROM (SELECT CONCAT(firstName, ' ', lastName) as name, SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[/OUTCOME]',1),'|',-1) as outcome from patient_info_copy pic    INNER JOIN patient_physio pp on pp.userId = pic.userId AND STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[OUTCOME]',-1),'|',1),'%d-%m-%Y') >= pp.start_date AND (pp.end_date is null OR STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[OUTCOME]',-1),'|',1),'%d-%m-%Y') <= pp.end_date) INNER JOIN user_copy u on u.id = pp.physioId WHERE notes REGEXP '\\\\[OUTCOME\\\\][0-9][^\\\\[]+\\\\[/OUTCOME\\\\]') sub GROUP BY name",
         '',
-        '',
-        ''
+        "SELECT name, 100*COUNT(IF(outcome=1,1,NULL)) / COUNT(IF(outcome=2,1,NULL)) as value FROM (SELECT CONCAT(firstName, ' ', lastName) as name, SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[/OUTCOME]',1),'|',-1) as outcome from patient_info_copy pic    INNER JOIN patient_physio pp on pp.userId = pic.userId AND STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[OUTCOME]',-1),'|',1),'%d-%m-%Y') >= pp.start_date AND (pp.end_date is null OR STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[OUTCOME]',-1),'|',1),'%d-%m-%Y') <= pp.end_date) INNER JOIN user_copy u on u.id = pp.physioId WHERE notes REGEXP '\\\\[OUTCOME\\\\][0-9][^\\\\[]+\\\\[/OUTCOME\\\\]' AND siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ") ) sub GROUP BY name",
       ]);
     },
     result: function(rows) {
@@ -621,7 +695,7 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT AVG(cnt) as mean, VARIANCE(cnt) as variance FROM (SELECT count(*) cnt FROM prescription p INNER JOIN exercise_session e on e.prescriptionId = p.id INNER JOIN patient_info_copy pic on pic.userId = p.userId WHERE outcome REGEXP '\\[OUTCOME\\][^\\[]+\\[/OUTCOME\\]' AND SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1)=1 GROUP BY p.userId) sub",
+        "SELECT AVG(cnt) as mean, VARIANCE(cnt) as variance FROM (SELECT count(*) cnt FROM prescription p INNER JOIN exercise_session e on e.prescriptionId = p.id INNER JOIN patient_info_copy pic on pic.userId = p.userId WHERE outcome REGEXP '\\\\[OUTCOME\\\\][^\\\\[]+\\\\[/OUTCOME\\\\]' AND SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1)=1 GROUP BY p.userId) sub",
         '',
         ''
       ]);

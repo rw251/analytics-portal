@@ -3,3 +3,5 @@ dist
 coverage
 db/datafrommujo
 docker-compose.yml
+.Rproj.user
+predictive_model/

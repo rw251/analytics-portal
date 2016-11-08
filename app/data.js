@@ -110,6 +110,19 @@ var data = {
     });
   },
 
+  getExerciseFrequencyDistribution: function(callback) {
+    get('exerciseFrequency', function(value) {
+      return callback(value);
+    }, function() {
+      $.getJSON('/api/distribution/exerciseFrequency', function(data) {
+        localforage.setItem('exerciseFrequency', data);
+        return callback(data);
+      }).error(function() {
+        return callback({"title":"Prescribed exercise frequency (# per week)","data":[{"label":"1","lower":1,"value":6},{"label":"2","lower":2,"value":2},{"label":"3","lower":3,"value":7},{"label":"4","lower":4,"value":0},{"label":"5","lower":5,"value":0},{"label":"6","lower":6,"value":0},{"label":"7","lower":7,"value":39},{"label":"8","lower":8,"value":0},{"label":"9","lower":9,"value":0},{"label":"10","lower":10,"value":0},{"label":"11","lower":11,"value":0},{"label":"12","lower":12,"value":0},{"label":"13","lower":13,"value":0},{"label":"14","lower":14,"value":21},{"label":"15","lower":15,"value":0},{"label":"16","lower":16,"value":0},{"label":"17","lower":17,"value":0},{"label":"18","lower":18,"value":0},{"label":"19","lower":19,"value":0},{"label":"20","lower":20,"value":0},{"label":"21","lower":21,"value":3},{"label":"22","lower":22,"value":0},{"label":"23","lower":23,"value":0},{"label":"24","lower":24,"value":0},{"label":"25","lower":25,"value":0},{"label":"26","lower":26,"value":0},{"label":"27","lower":27,"value":0},{"label":"28","lower":28,"value":0}]});
+      });
+    });
+  },
+
   getLocations: function(callback) {
     get('locations', function(value) {
       return callback(value);
