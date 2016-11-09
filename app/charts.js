@@ -91,6 +91,7 @@ var drawBarDistribution = function(ctx, result) {
   result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
   ctx.parent().find('.chart-title').text(result.chart.title);
+  ctx.parent().find('img').remove();
 
   var myLineChart = new Chart(ctx, {
     type: maxValue === 0 ? 'empty' : 'bar',
@@ -168,6 +169,7 @@ var chts = {
       result.data.forEach(function(v) { maxValue = Math.max(maxValue, v.value); });
 
       ctx.parent().find('.chart-title').text(result.title);
+      ctx.parent().find('img').remove();
       var origCtx = ctx;
       var canvas = ctx[0];
       ctx = canvas.getContext("2d");
@@ -279,17 +281,18 @@ var chts = {
       //populate table
       var tmpl = require('./templates/top10table');
       var html = tmpl({ items: result.data });
+      ctx.parent().find('img').remove();
       ctx.parent().find('.table-wrapper').hide().html(html);
       ctx.parent().find('.show-table').off('click').on('click', function(){
         if($(this).text()==="Show as table"){
           $(this).text("Show as chart").removeClass('btn-info').addClass('btn-success');
           var currentCanvasHeight = $(this).parent().parent().find("canvas").height();
           $(this).parent().parent().find("canvas").hide();
-          $(this).parent().parent().find(".table-wrapper").show().css('max-height', currentCanvasHeight);
+          $(this).parent().parent().find(".table-wrapper").show().css('height', currentCanvasHeight);
         } else {
           $(this).text("Show as table").removeClass('btn-success').addClass('btn-info');
           $(this).parent().parent().find("canvas").show();
-          $(this).parent().parent().find(".table-wrapper").hide().css('max-height', '');
+          $(this).parent().parent().find(".table-wrapper").hide().css('height', '');
         }
       });
     });

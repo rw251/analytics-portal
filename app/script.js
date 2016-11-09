@@ -15,6 +15,9 @@ var App = {
      *** This happens when the page is ready ***
      ******************************************/
     $(document).on('ready', function() {
+      setTimeout(function(){
+        $('#side-menu').metisMenu();
+      },0);
       data.getLastUpdated(function(val){
         console.log(val);
         layout.loadView(location.pathname, location.hash);

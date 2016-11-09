@@ -21,7 +21,15 @@ var doQuery = function(sqlObject, dataObj, callback) {
   db.get().query(queryString, function(err, rows) {
     if (db.isDebug()) console.timeEnd(r);
     if (err) return callback(err);
-    callback(null, sqlObject.result(rows));
+    if(sqlObject.result.length===2) {
+      //async takes callback
+      sqlObject.result(rows, function(err, rslt){
+        if (err) return callback(err);
+        return callback(null, rslt);
+      });
+    } else {
+      return callback(null, sqlObject.result(rows));
+    }
   });
 };
 
@@ -314,7 +322,10 @@ var query = {
 
   locations: {
 
-    all: locs
+    //all: locs
+    all: function(user, done){
+      doQuery(permissions.locations, {user: user}, done);
+    }
 
   },
 

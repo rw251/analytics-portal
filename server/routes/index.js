@@ -209,7 +209,7 @@ module.exports = function(passport) {
   });
 
   router.get('/portal', isAuthenticated, function(req, res, next){
-    res.render('pages/portal.jade', { isPortal: true, admin: req.user.roles.indexOf("admin") > -1, fullname: req.user.fullname });
+    res.render('pages/portal.jade', { isPortal: true, admin: req.user.roles.indexOf("admin") > -1, menuItems: permissions.sidebar.roles[req.user.roles[0]], fullname: req.user.fullname });
   });
 
   /* Ensure all html/js resources are only accessible if authenticated */

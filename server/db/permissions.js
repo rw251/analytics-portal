@@ -1,6 +1,8 @@
 var auth = require('./auth.js'),
   db = require('./db.js'),
-  lookup = require('../controllers/lookup.js');
+  lookup = require('../controllers/lookup.js'),
+  lsoa = require('../controllers/lsoa.js'),
+  locations = require('./locations.js');
 
 var q = function(roles, role, yesUserSiteNone) {
   if (roles[role] === auth.yes) {
@@ -306,6 +308,48 @@ module.exports = {
       operator: auth.no,
       provider: auth.bySite,
       payor: auth.bySite
+
+      /*  NATHAN
+        MUMMY
+        DADDY
+        GRANDDAD
+        GRANDMA
+        AUNTIE ANNE
+        UNCLE MICHAEL
+        VIV
+        YOGURT
+        BIG YOGURT
+        GRANDPA
+        NANNA
+        JOSHUA
+        HELEN
+        JOSHUA'S DADDY*/
+
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        "select SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[\\LSOA]',-1),'[/LSOA]',1) as lsoa from patient_info_copy WHERE notes REGEXP '\\\\[LSOA\\\\][^\\\\[]+\\\\[/LSOA\\\\]'",
+        '',
+        "select SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[\\LSOA]',-1),'[/LSOA]',1) as lsoa from patient_info_copy p INNER JOIN user_copy u ON u.id = p.userId WHERE notes REGEXP '\\\\[LSOA\\\\][^\\\\[]+\\\\[/LSOA\\\\]' AND siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ")"
+      ]);
+    },
+    result: function(rows, callback) {
+      var sites = [
+        { pos: { lat: 51.514976, lng: -0.152516 }, name: "Clinic 1", id: 1 },
+        { pos: { lat: 51.544667, lng: -0.102851 }, name: "Clinic 2", id: 2 },
+        { pos: { lat: 51.584667, lng: -0.252851 }, name: "Clinic 3", id: 3 },
+        { pos: { lat: 51.541667, lng: 0.102851 }, name: "Clinic 4", id: 4 }
+      ];
+      if(rows.length===0){
+        lsoa.getList(locations.people, function(err, list) {
+          return callback(null, { people: list, sites: locations.sites, real: false});
+        });
+      } else {
+        lsoa.getList(rows.map(function(v) { return v.lsoa; }), function(err, list) {
+          return callback(null, { people: list, sites: locations.sites, real: true});
+        });
+      }
+
     }
   },
   predictiveModel: {
@@ -330,7 +374,7 @@ module.exports = {
   /* distribution queries */
 
   distributionAge: {
-    chart:{
+    chart: {
       title: "Age distribution",
       xTitle: "Age (years)",
       yTitle: "# patients"
@@ -349,7 +393,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return { chart: this.chart,  data: histogram(rows, ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"]) };
+      return { chart: this.chart, data: histogram(rows, ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"]) };
     }
   },
   distributionSex: {
@@ -372,14 +416,14 @@ module.exports = {
         title: "Sex distribution",
         data: rows.map(function(v) {
           //	0 is female and 1 is male. - email from Asim 8th November 2016
-          if (v.gender === 1) return { label: "Male", value: v.num, color:"#FF6384",highlight: "#FF6384" };
-          else return { label: "Female", value: v.num, color:"#36A2EB",highlight: "#36A2EB" };
+          if (v.gender === 1) return { label: "Male", value: v.num, color: "#FF6384", highlight: "#FF6384" };
+          else return { label: "Female", value: v.num, color: "#36A2EB", highlight: "#36A2EB" };
         })
       };
     }
   },
   distributionBMI: {
-    chart:{
+    chart: {
       title: "BMI distribution",
       xTitle: "BMI",
       yTitle: "# patients"
@@ -398,11 +442,11 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return { chart: this.chart,  data: histogram(rows, ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44"]) };
+      return { chart: this.chart, data: histogram(rows, ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44"]) };
     }
   },
   distributionHours: {
-    chart:{
+    chart: {
       title: "Usage hours",
       xTitle: "Time (24h clock)",
       yTitle: "# patients"
@@ -421,12 +465,12 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return { chart: this.chart,  data: histogram(rows, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]) };
+      return { chart: this.chart, data: histogram(rows, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]) };
     }
   },
 
   distributionExerciseFrequency: {
-    chart:{
+    chart: {
       title: "Prescribed exercise frequency",
       xTitle: "Sessions per week",
       yTitle: "# patients"
@@ -467,7 +511,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return {title: "Sites by patient", data:rows};
+      return { title: "Sites by patient", data: rows };
     }
   },
   prescriptionsByPatients: {
@@ -486,7 +530,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return {title: "Prescriptions by patient", data:rows};
+      return { title: "Prescriptions by patient", data: rows };
     }
   },
   physiosByNumberPatients: {
@@ -505,7 +549,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return {title: "Physios by patient", data:rows};
+      return { title: "Physios by patient", data: rows };
     }
   },
   physiosByOutcome: {
@@ -524,7 +568,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return {title: "Physios by outcome", data:rows};
+      return { title: "Physios by outcome", data: rows };
     }
   },
   occupationsByPatients: {
@@ -543,7 +587,7 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      return {title: "Occupations by patient", data:rows};
+      return { title: "Occupations by patient", data: rows };
     }
   },
   deviceByLoadFactor: {
@@ -564,11 +608,11 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      rows = rows.map(function(v){
+      rows = rows.map(function(v) {
         v.name = lookup.cache("ExerciseStation")[v.name];
         return v;
       });
-      return {title: "Devices by load factor (% utilisation in last 6 months)", data:rows};
+      return { title: "Devices by load factor (% utilisation in last 6 months)", data: rows };
     }
   },
   deviceByBearingLife: {
@@ -582,17 +626,17 @@ module.exports = {
     query: function(dataObj) {
       var totalLife = 25000; //hours
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
+        'SELECT exerciseStationId as name, ' + totalLife + ' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId as name, ' + totalLife + ' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
-      rows = rows.map(function(v){
+      rows = rows.map(function(v) {
         v.name = lookup.cache("ExerciseStation")[v.name];
         return v;
       });
-      return {title: "Devices by bearing life (hours remaining)", data:rows};
+      return { title: "Devices by bearing life (hours remaining)", data: rows };
     }
   },
   deviceByCableLife: {
@@ -606,17 +650,17 @@ module.exports = {
     query: function(dataObj) {
       var totalLife = 15000; //hours
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
+        'SELECT exerciseStationId as name, ' + totalLife + ' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId GROUP BY exerciseStationId',
         '',
-        'SELECT exerciseStationId as name, ' + totalLife +' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
+        'SELECT exerciseStationId as name, ' + totalLife + ' - SUM(re.duration)/(1000*60*60) as value  FROM result_exercise re INNER JOIN exercise e on e.id = re.exerciseId INNER JOIN exercise_session es on es.id = re.exerciseSessionId WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY exerciseStationId'
       ]);
     },
     result: function(rows) {
-      rows = rows.map(function(v){
+      rows = rows.map(function(v) {
         v.name = lookup.cache("ExerciseStation")[v.name];
         return v;
       });
-      return {title: "Devices by cable life (hours remaining)", data:rows};
+      return { title: "Devices by cable life (hours remaining)", data: rows };
     }
   },
   deviceByAvgSessionTime: {
@@ -635,11 +679,11 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      rows = rows.map(function(v){
+      rows = rows.map(function(v) {
         v.name = lookup.cache("ExerciseStation")[v.name];
         return v;
       });
-      return {title: "Devices by average session time in minutes", data:rows};
+      return { title: "Devices by average session time in minutes", data: rows };
     }
   },
   mostCommonFaultByPatients: {
@@ -658,11 +702,11 @@ module.exports = {
       ]);
     },
     result: function(rows) {
-      rows = rows.map(function(v){
+      rows = rows.map(function(v) {
         v.name = lookup.cache("SkipReason")[v.name];
         return v;
       });
-      return {title: "Most common failure reason", data:rows};
+      return { title: "Most common failure reason", data: rows };
     }
   },
 
