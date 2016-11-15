@@ -6,7 +6,9 @@ include mixins/top10item
 - for (var i = 0; i < n/2; ++i) {
   .row
     - for (var j = 0; j < 2; ++j) {
-      .col-lg-6.padding-0
-        +top10Item("chart"+(2*i+j))
+      - if(2*i+j < n) {
+        .col-lg-6.padding-0
+          +top10Item("chart"+(2*i+j))
+      - }
     - }
 - }

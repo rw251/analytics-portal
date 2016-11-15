@@ -197,9 +197,9 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT count(*) as cnt FROM prescription',
+        "SELECT count(*) as cnt FROM prescription WHERE name NOT LIKE '%rnal assess%'",
         '',
-        'SELECT count(*) as cnt FROM prescription WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ')'
+        "SELECT count(*) as cnt FROM prescription WHERE name NOT LIKE '%rnal assess%' AND siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ")"
       ]);
     },
     result: function(rows) {
@@ -216,9 +216,9 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        'SELECT COUNT(*) as cnt FROM (SELECT name FROM prescription GROUP BY name) sub',
+        "SELECT COUNT(*) as cnt FROM (SELECT name FROM prescription WHERE name NOT LIKE '%rnal assess%' GROUP BY name) sub",
         '',
-        'SELECT count(*) as cnt FROM (SELECT name FROM prescription WHERE siteId in (' + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY name) sub',
+        "SELECT count(*) as cnt FROM (SELECT name FROM prescription WHERE name NOT LIKE '%rnal assess%' AND siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ') GROUP BY name) sub',
       ]);
     },
     result: function(rows) {
@@ -548,13 +548,32 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT name, count(*) as value FROM prescription GROUP BY name ORDER BY count(*) DESC",
-        "SELECT name, count(*) as value FROM prescription p INNER JOIN user_copy u on u.id = p.createdBy WHERE u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY name ORDER BY count(*) DESC",
+        "SELECT name, count(*) as value FROM prescription WHERE name NOT LIKE '%rnal assess%' GROUP BY name ORDER BY count(*) DESC",
+        "SELECT name, count(*) as value FROM prescription p INNER JOIN user_copy u on u.id = p.createdBy  WHERE name NOT LIKE '%rnal assess%' AND u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY name ORDER BY count(*) DESC",
         ''
       ]);
     },
     result: function(rows) {
       return { title: "Prescriptions by patient", data: rows };
+    }
+  },
+  assessmentsByPatients: {
+    text: "The number of patients per assessment",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.byUser,
+      provider: auth.yes,
+      payor: auth.yes
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        "SELECT name, count(*) as value FROM prescription WHERE name LIKE '%rnal assess%' GROUP BY name ORDER BY count(*) DESC",
+        "SELECT name, count(*) as value FROM prescription p INNER JOIN user_copy u on u.id = p.createdBy WHERE name LIKE '%rnal assess%' AND u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY name ORDER BY count(*) DESC",
+        ''
+      ]);
+    },
+    result: function(rows) {
+      return { title: "Assessments by patient", data: rows };
     }
   },
   physiosByNumberPatients: {

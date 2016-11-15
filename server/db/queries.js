@@ -337,6 +337,9 @@ var query = {
     prescriptionsPerPatient: function(user, done) {
       doQuery(permissions.prescriptionsByPatients, { user: user }, done);
     },
+    assessmentsPerPatient: function(user, done) {
+      doQuery(permissions.assessmentsByPatients, { user: user }, done);
+    },
     physiosPerPatient: function(user, done) {
       doQuery(permissions.physiosByNumberPatients, { user: user }, done);
     },

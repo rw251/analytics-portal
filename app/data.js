@@ -1,5 +1,5 @@
 var localforage = require('localforage');
-var VERSION = "0.0.5";
+var VERSION = "0.0.6";
 var DEBUG = true;
 
 var get = function(key, ifExists, ifNotExists) {
