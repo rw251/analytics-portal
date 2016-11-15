@@ -237,8 +237,14 @@ var chts = {
 
   },
 
-  drawExerciseFrequencyDistribution: function(ctx) {
-    data.getExerciseFrequencyDistribution(function(result) {
+  drawExerciseFrequencyPerDayDistribution: function(ctx) {
+    data.getExerciseFrequencyPerDayDistribution(function(result) {
+      drawBarDistribution(ctx, result);
+    });
+  },
+
+  drawExerciseFrequencyPerWeekDistribution: function(ctx) {
+    data.getExerciseFrequencyPerWeekDistribution(function(result) {
       drawBarDistribution(ctx, result);
     });
   },

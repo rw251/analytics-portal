@@ -382,8 +382,12 @@ var query = {
       doQuery(permissions.distributionHours, { user: user }, done);
     },
 
-    exerciseFrequency: function(user, done) {
-      doQuery(permissions.distributionExerciseFrequency, { user: user }, done);
+    exerciseFrequencyPerDay: function(user, done) {
+      doQuery(permissions.distributionExerciseFrequencyPerDay, { user: user }, done);
+    },
+
+    exerciseFrequencyPerWeek: function(user, done) {
+      doQuery(permissions.distributionExerciseFrequencyPerWeek, { user: user }, done);
     }
 
   }

@@ -116,9 +116,9 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\\\[OUTCOME\\\\][^\\\\[]+\\\\[/OUTCOME\\\\]' GROUP BY outcum",
+        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE notes REGEXP '\\\\[OUTCOME\\\\][0-9][^\\\\[]+\\\\[/OUTCOME\\\\]' GROUP BY outcum",
         '',
-        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE outcome REGEXP '\\\\[OUTCOME\\\\][^\\\\[]+\\\\[/OUTCOME\\\\]' AND userId IN (SELECT userId FROM prescription WHERE siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ") GROUP BY userId) GROUP BY outcum"
+        "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[/OUTCOME]',1),'|',-1) as outcum, count(*) as cnt FROM patient_info_copy WHERE notes REGEXP '\\\\[OUTCOME\\\\][0-9][^\\\\[]+\\\\[/OUTCOME\\\\]' AND userId IN (SELECT userId FROM prescription WHERE siteId in (" + db.get().escape(dataObj.user.sites.map(function(v) { return +v.id; })) + ") GROUP BY userId) GROUP BY outcum"
       ]);
     },
     result: function(rows) {
@@ -469,9 +469,33 @@ module.exports = {
     }
   },
 
-  distributionExerciseFrequency: {
+  distributionExerciseFrequencyPerDay: {
     chart: {
-      title: "Prescribed exercise frequency",
+      title: "Prescribed exercise frequency (per day)",
+      xTitle: "Sessions per day",
+      yTitle: "# patients"
+    },
+    roles: {
+      mujo: auth.yes,
+      operator: auth.byUser,
+      provider: auth.bySite,
+      payor: auth.bySite
+    },
+    query: function(dataObj) {
+      return q(this.roles, dataObj.user.roles[0], [
+        "select frequency as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod ='day' AND frequency is not null",
+        "select frequency as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod ='day' AND frequency is not null",
+        "select frequency as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod ='day' AND frequency is not null"
+      ]);
+    },
+    result: function(rows) {
+      return { chart: this.chart, data: histogram(rows, ["1", "2", "3", "4", "5", "6", "7", "8"]) };
+    }
+  },
+
+  distributionExerciseFrequencyPerWeek: {
+    chart: {
+      title: "Prescribed exercise frequency (per week)",
       xTitle: "Sessions per week",
       yTitle: "# patients"
     },
@@ -483,13 +507,13 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod is not null AND frequency is not null",
-        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod is not null AND frequency is not null",
-        "select CASE frequencyPeriod WHEN 'week' THEN frequency WHEN 'day' THEN frequency*7 END as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod is not null AND frequency is not null"
+        "select frequency as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod ='week' AND frequency is not null",
+        "select frequency as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod ='week' AND frequency is not null",
+        "select frequency as val FROM prescription p INNER JOIN user_copy u ON u.id = p.createdBy WHERE u.userRoleId=2 AND frequencyPeriod ='week' AND frequency is not null"
       ]);
     },
     result: function(rows) {
-      return { chart: this.chart, data: histogram(rows, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"]) };
+      return { chart: this.chart, data: histogram(rows, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]) };
     }
   },
 
@@ -505,7 +529,7 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT CASE WHEN s.name IS NULL THEN 'Unknown site' ELSE s.name END as name, count(*) as value FROM user_copy u LEFT OUTER JOIN site s on s.id = u.siteId GROUP by s.name ORDER BY count(*) DESC",
+        "SELECT CASE WHEN s.name IS NULL THEN 'Unknown site' ELSE s.name END as name, count(*) as value FROM patient_info_copy p INNER JOIN user_copy u on u.id = p.userId LEFT OUTER JOIN site s on s.id = u.siteId GROUP by s.name ORDER BY count(*) DESC",
         '',
         ''
       ]);
@@ -761,7 +785,7 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT AVG(cnt) as mean, VARIANCE(cnt) as variance FROM (SELECT count(*) cnt FROM prescription p INNER JOIN exercise_session e on e.prescriptionId = p.id INNER JOIN patient_info_copy pic on pic.userId = p.userId WHERE outcome REGEXP '\\\\[OUTCOME\\\\][^\\\\[]+\\\\[/OUTCOME\\\\]' AND SUBSTRING_INDEX(SUBSTRING_INDEX(outcome,'[/OUTCOME]',1),'|',-1)=1 GROUP BY p.userId) sub",
+        "SELECT AVG(cnt) as mean, VARIANCE(cnt) as variance FROM (SELECT count(*) cnt FROM prescription p INNER JOIN exercise_session e on e.prescriptionId = p.id INNER JOIN patient_info_copy pic on pic.userId = p.userId WHERE notes REGEXP '\\\\[OUTCOME\\\\][0-9][^\\\\[]+\\\\[/OUTCOME\\\\]' AND SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[/OUTCOME]',1),'|',-1)=1 GROUP BY p.userId) sub",
         '',
         ''
       ]);

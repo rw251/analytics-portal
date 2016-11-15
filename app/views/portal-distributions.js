@@ -17,7 +17,8 @@ var portal = {
     charts.drawSexDistribution($('#chart2'));
     charts.drawBMIDistribution($('#chart3'));
     charts.drawUsageHoursDistribution($('#chart4'));
-    charts.drawExerciseFrequencyDistribution($('#chart5'));
+    charts.drawExerciseFrequencyPerDayDistribution($('#chart5'));
+    charts.drawExerciseFrequencyPerWeekDistribution($('#chart6'));
 
     sidebar.show();
     //sidebar.wireup();
