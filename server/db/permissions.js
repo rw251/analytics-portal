@@ -548,8 +548,8 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT name, count(*) as value FROM prescription WHERE name NOT LIKE '%rnal assess%' GROUP BY name ORDER BY count(*) DESC",
-        "SELECT name, count(*) as value FROM prescription p INNER JOIN user_copy u on u.id = p.createdBy  WHERE name NOT LIKE '%rnal assess%' AND u.email = " + db.get().escape(dataObj.user.email) + " GROUP BY name ORDER BY count(*) DESC",
+        "SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name, count(*) as value FROM exercise GROUP BY name ORDER by COUNT(*) DESC",
+        "SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name, count(*) as value FROM exercise GROUP BY name ORDER by COUNT(*) DESC",
         ''
       ]);
     },
