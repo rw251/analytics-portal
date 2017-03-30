@@ -1,0 +1,10 @@
+h2 Output
+table.table
+  tbody
+    tr
+      td Sample size
+      td= sampleSize
+    - each outcome in outcomes
+      tr
+        td= outcome.name
+        td= "Mean: " + outcome.mean + ", standard deviation: " + outcome.sd

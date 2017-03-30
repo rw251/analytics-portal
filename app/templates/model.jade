@@ -3,6 +3,35 @@
     h1.page-header Model
 .row
   .col-lg-4
-    h2 Patient Details
-  .col-lg-8
-    h2 Output
+    h3 Patient Details
+    form.form-horizontal(role="form")
+      .form-group
+        .col-sm-4
+          label.control-label(for="ageFrom") Age from:
+          input#agefrom.form-control(type="number",placeholder="Age from",name="ageFrom",value=ageFrom)
+        .col-sm-4
+          label.control-label(for="ageTo") to: 
+          input#ageto.form-control(type="number",placeholder="Age to",name="ageTo", value=ageTo)
+        .col-sm-4
+          label.control-label(for="ageUnknown") Age unknown: 
+          label.checkbox-inline
+            input(name="ageUnknown",type="checkbox", checked)
+            = "(n=" + ageUnknown + ") "
+      .form-group
+        .col-sm-1
+          label Sex: 
+        .col-sm-10.col-offset-sm-1
+          label.checkbox-inline
+            input(name="sexMale",type="checkbox", checked)
+            = "Male (n=" + M + ") "
+          label.checkbox-inline
+            input(name="sexFemale",type="checkbox", checked)
+            = "Female (n=" + F + ") "
+          label.checkbox-inline
+            input(name="sexOther",type="checkbox", checked)
+            = "Unknown (n=" + U + ") "
+      .form-group
+        .col-sm-12
+          button#generate.btn.btn-default(type="submit") Generate
+  #output.col-lg-8
+    

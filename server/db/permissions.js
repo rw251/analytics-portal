@@ -548,12 +548,19 @@ module.exports = {
     },
     query: function(dataObj) {
       return q(this.roles, dataObj.user.roles[0], [
-        "SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name, count(*) as value FROM exercise GROUP BY name ORDER by COUNT(*) DESC",
-        "SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°') when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name, count(*) as value FROM exercise GROUP BY name ORDER by COUNT(*) DESC",
+        "SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name2, count(*) as value FROM exercise e INNER JOIN prescription p ON e.prescriptionId = p.id WHERE p.name NOT LIKE 'External Assessment' AND p.name NOT LIKE 'Internal Assessment' GROUP BY name2 ORDER by COUNT(*) DESC",
+        "SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name2, count(*) as value FROM exercise e INNER JOIN prescription p ON e.prescriptionId = p.id WHERE p.name NOT LIKE 'External Assessment' AND p.name NOT LIKE 'Internal Assessment' GROUP BY name2 ORDER by COUNT(*) DESC",
         ''
       ]);
     },
     result: function(rows) {
+      //can't call the column "name" in the query due to a naming conflict so call
+      // it name2 and fix here
+      rows = rows.map(function(v){
+        v.name = v.name2;
+        delete v.name2;
+        return v;
+      });
       return { title: "Prescriptions by patient", data: rows };
     }
   },
@@ -806,6 +813,51 @@ module.exports = {
       return q(this.roles, dataObj.user.roles[0], [
         "SELECT AVG(cnt) as mean, VARIANCE(cnt) as variance FROM (SELECT count(*) cnt FROM prescription p INNER JOIN exercise_session e on e.prescriptionId = p.id INNER JOIN patient_info_copy pic on pic.userId = p.userId WHERE notes REGEXP '\\\\[OUTCOME\\\\][0-9][^\\\\[]+\\\\[/OUTCOME\\\\]' AND SUBSTRING_INDEX(SUBSTRING_INDEX(notes,'[/OUTCOME]',1),'|',-1)=1 GROUP BY p.userId) sub",
         '',
+        ''
+      ]);
+    },
+    result: function(rows) {
+      return rows;
+    }
+  },
+
+  modelAverageCompliance: {
+    text: "Average compliance for a group of patients",
+    roles: {
+      mujo: auth.yes,
+      operator: auth.yes,
+      provider: auth.no,
+      payor: auth.no
+    },
+    query: function(dataObj) {
+      console.log(dataObj);
+      console.log(typeof(dataObj.last_updated));
+      var last_updated_string = dataObj.last_updated.toISOString().substr(0,10);
+
+      var patientFilterSQL = [];
+      if(dataObj.params.ageUnknown) {
+        var temp = [];
+        if(dataObj.params.ageFrom) {
+          temp.push("TIMESTAMPDIFF(YEAR,pi.dateOfBirth,'" + last_updated_string + "') >= " + dataObj.params.ageFrom);
+        }
+        if(dataObj.params.ageTo) {
+          temp.push("TIMESTAMPDIFF(YEAR,pi.dateOfBirth,'" + last_updated_string + "') <= " + dataObj.params.ageTo);
+        }
+        patientFilterSQL.push("AND (pi.dateOfBirth IS NULL OR " + temp.join(" AND ") + ")");
+      } else {
+        if(dataObj.params.ageFrom) {
+          patientFilterSQL.push("AND TIMESTAMPDIFF(YEAR,pi.dateOfBirth,'" + last_updated_string + "') >= " + dataObj.params.ageFrom);
+        }
+        if(dataObj.params.ageTo) {
+          patientFilterSQL.push("AND TIMESTAMPDIFF(YEAR,pi.dateOfBirth,'" + last_updated_string + "') <= " + dataObj.params.ageTo);
+        }
+      }
+
+      if(dataObj.params.sexMale && dataObj.params.sexFemale && dataObj.params.sexOther)
+
+      return q(this.roles, dataObj.user.roles[0], [
+        "SELECT p.complianceScore, count(*)/((case when frequencyPeriod = 'day' then 7*frequency else frequency end) * (datediff(case when p.endDate is null then '" + last_updated_string + "' else endDate end, p.startDate) + 1)/7) as doneProportion FROM prescription p inner join exercise_session es on es.prescriptionId = p.id WHERE frequency is not null AND es.startDate >= p.startDate AND es.startDate <= (case when p.endDate is null then '" + last_updated_string + "' else endDate end) GROUP BY p.id, p.userId,(case when frequencyPeriod = 'day' then 7*frequency else frequency end) * (datediff(case when p.endDate is null then '" + last_updated_string + "' else endDate end, p.startDate) + 1)/7, p.complianceScore",
+        "SELECT p.complianceScore, count(*)/((case when frequencyPeriod = 'day' then 7*frequency else frequency end) * (datediff(case when p.endDate is null then '" + last_updated_string + "' else endDate end, p.startDate) + 1)/7) as doneProportion FROM prescription p inner join exercise_session es on es.prescriptionId = p.id WHERE frequency is not null AND es.startDate >= p.startDate AND es.startDate <= (case when p.endDate is null then '" + last_updated_string + "' else endDate end) GROUP BY p.id, p.userId,(case when frequencyPeriod = 'day' then 7*frequency else frequency end) * (datediff(case when p.endDate is null then '" + last_updated_string + "' else endDate end, p.startDate) + 1)/7, p.complianceScore",
         ''
       ]);
     },

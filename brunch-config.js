@@ -2,36 +2,37 @@ module.exports = {
   // See http://brunch.io for documentation.
   paths: {
     public: 'dist',
-    watched: ['app','vendor']
+    watched: ['app', 'vendor'],
   },
 
   files: {
     javascripts: {
       joinTo: {
-        'libraries.js': /^(?!(app|server)\/)/
+        'libraries.js': /^(?!(app|server)\/)/,
       },
       order: {
         before: [
-          'vendor/scripts/bootstrap.js'
-          ]
+          /jquery/,
+          'vendor/scripts/bootstrap.js',
+        ],
       },
       entryPoints: {
         'app/script.js': {
-          'app.js': /^app\//
-        }
-      }
+          'app.js': /^app\//,
+        },
+      },
     },
     stylesheets: {
       joinTo: 'app.css',
       order: {
-        before: ['vendor/styles/bootstrap.scss']
-      }
+        before: ['vendor/styles/bootstrap.scss'],
+      },
     },
 
     templates: {
-      joinTo: 'app.js'
-    }
-  }/*,
+      joinTo: 'app.js',
+    },
+  }, /* ,
 
   server: {
     run: true,

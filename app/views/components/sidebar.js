@@ -1,30 +1,28 @@
-var data = require('../../data.js');
-var isDrawn = false, isVisible = false;
+const data = require('../../data.js');
+const $ = require('jquery');
+const sidebarTmpl = require('../../templates/sidebar.jade');
 
-var side = {
+let isDrawn = false;
 
-  hide: function() {
-    $('#sidebar-wrapper').hide(function(){
-      isVisible = false;
-    });
-    $('#page-wrapper').removeClass("main-with-sidebar");
+const side = {
+
+  hide() {
+    $('#sidebar-wrapper').hide();
+    $('#page-wrapper').removeClass('main-with-sidebar');
   },
 
-  show: function() {
+  show() {
     if (isDrawn) {
-      $('#sidebar-wrapper').show(function(){
-        isVisible = true;
-      });
-      $('#page-wrapper').addClass("main-with-sidebar");
-      setTimeout(side.highlight,0); //so that the change happens before the page renders
+      $('#sidebar-wrapper').show();
+      $('#page-wrapper').addClass('main-with-sidebar');
+      setTimeout(side.highlight, 0); // so that the change happens before the page renders
     } else {
-      data.getSidebar(function(menuItems){
-        var tmpl = require('../../templates/sidebar');
-        var html = tmpl({menuItems: menuItems});
+      data.getSidebar((menuItems) => {
+        const html = sidebarTmpl({ menuItems });
 
         $('#sidebar-wrapper').html(html).show();
 
-        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        const width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         if (width < 768) {
           $('div.navbar-collapse').addClass('collapse');
         }
@@ -32,15 +30,15 @@ var side = {
         side.wireup();
 
         isDrawn = true;
-        $('#page-wrapper').addClass("main-with-sidebar");
-        setTimeout(side.highlight,0); //so that the change happens before the page renders
+        $('#page-wrapper').addClass('main-with-sidebar');
+        setTimeout(side.highlight, 0); // so that the change happens before the page renders
       });
     }
   },
 
-  resize: function() {
-    var topOffset = 50;
-    var width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
+  resize() {
+    let topOffset = 50;
+    const width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
     if (width < 768) {
       $('div.navbar-collapse').addClass('collapse');
       topOffset += $('#side-menu').height();
@@ -48,55 +46,51 @@ var side = {
       $('div.navbar-collapse').removeClass('collapse');
     }
 
-    var height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;
-    height = height - topOffset;
+    let height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;
+    height -= topOffset;
     if (height < 1) height = 1;
     if (height > topOffset) {
-      $("#page-wrapper").css("min-height", (height) + "px");
+      $('#page-wrapper').css('min-height', `${height}px`);
     }
-    $("#page-wrapper").css("padding-top", (topOffset) + "px");
+    $('#page-wrapper').css('padding-top', `${topOffset}px`);
   },
 
-  highlight: function(){
-    var url = window.location;
+  highlight() {
+    const url = window.location;
     $('ul.nav a').removeClass('active');
-    var elList = $('ul.nav a').filter(function() {
-      return this.href == url;
+    let elList = $('ul.nav a').filter(function listFilter1() {
+      return this.href === url;
     });
-    if(elList.length===0) elList = $('ul.nav a').filter(function() {
-      return this.href[this.href.length - 1] === '#';
-    });
-    var element = elList.addClass('active').parent();
+    if (elList.length === 0) {
+      elList = $('ul.nav a').filter(function listFilter12() {
+        return this.href[this.href.length - 1] === '#';
+      });
+    }
+    let element = elList.addClass('active').parent();
 
-    while (true) {
-      if (element.is('li')) {
-        element = element.parent().addClass('in').parent();
-      } else {
-        break;
-      }
+    while (element.is('li')) {
+      element = element.parent().addClass('in').parent();
     }
   },
 
-  wireup: function() {
-    $(function() {
-
+  wireup() {
+    $(() => {
       $('#side-menu').metisMenu();
 
-      $('body').on('click', function() {
+      $('body').on('click', () => {
         $('.sidebar-nav').collapse('hide');
       });
-
     });
 
-    //Loads the correct sidebar on window load,
-    //collapses the sidebar on window resize.
+    // Loads the correct sidebar on window load,
+    // collapses the sidebar on window resize.
     // Sets the min-height of #page-wrapper to window size
-    $(function() {
-      $(window).bind("load resize", function() {
+    $(() => {
+      $(window).bind('load resize', function loadOrResizeWindow() {
         side.resize.call(this);
       });
     });
-  }
+  },
 };
 
 module.exports = side;

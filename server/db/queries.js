@@ -9,7 +9,7 @@ var db = require('./db.js'),
  * @param function(err, value) $callback - Called with the results
  * @return null
  */
-var doQuery = function(sqlObject, dataObj, callback) {
+var doQuery = function(sqlObject, dataObj, callback, cacheName) {
   var queryString = sqlObject.query(dataObj);
   console.log(queryString);
   if (!queryString) {
@@ -25,13 +25,19 @@ var doQuery = function(sqlObject, dataObj, callback) {
       //async takes callback
       sqlObject.result(rows, function(err, rslt){
         if (err) return callback(err);
+        if(cacheName) CACHE[cacheName] = rslt;
         return callback(null, rslt);
       });
     } else {
-      return callback(null, sqlObject.result(rows));
+      var rslt = sqlObject.result(rows);
+      if(cacheName) CACHE[cacheName] = rslt;
+      return callback(null, rslt);
     }
   });
 };
+
+// Cache some things for reuse in the queries
+var CACHE={};
 
 var query = {
 
@@ -226,8 +232,9 @@ var query = {
       });
     },
 
-    last_updated: function(done) {
-      doQuery(permissions.last_updated, {}, done);
+    last_updated: function(done, cacheIsOk) {
+      if(cacheIsOk && CACHE.LAST_UPDATED) return done(null, CACHE.LAST_UPDATED);
+      doQuery(permissions.last_updated, {}, done, "LAST_UPDATED");
     },
 
     count: {
@@ -272,16 +279,40 @@ var query = {
 
   },
 
-  occupations: function(done) {
+  occupations: function(done, cacheIsOk) {
+    if(cacheIsOk && CACHE.OCCUPATIONS) return done(null, CACHE.OCCUPATIONS);
     db.get().query('SELECT occupation as val, COUNT(*) as num FROM patient_info_copy WHERE occupation is not null GROUP BY occupation', function(err, rows) {
       if (err) return done(err);
+      CACHE.OCCUPATIONS = rows;
       done(null, rows);
     });
   },
 
-  diagnoses: function(done) {
+  diagnoses: function(done, cacheIsOk) {
+    if(cacheIsOk && CACHE.DIAGNOSES) return done(null, CACHE.DIAGNOSES);
     db.get().query('SELECT diagnosis as val, COUNT(*) as num FROM patient_info_copy WHERE diagnosis is not null AND diagnosis != "" GROUP BY diagnosis', function(err, rows) {
       if (err) return done(err);
+      CACHE.DIAGNOSES = rows;
+      done(null, rows);
+    });
+  },
+
+  ages: function(done, cacheIsOk) {
+    if(cacheIsOk && CACHE.AGES) return done(null, CACHE.AGES);
+    query.summary.last_updated(function(err, lu) {
+      db.get().query("SELECT TIMESTAMPDIFF(YEAR,dateOfBirth,'" + lu.toISOString().substr(0,10) + "') AS age, count(*) AS num FROM patient_info_copy GROUP BY TIMESTAMPDIFF(YEAR,dateOfBirth,'" + lu.toISOString().substr(0,10) + "')", function(err, rows) {
+        if (err) return done(err);
+        CACHE.AGES = rows;
+        done(null, rows);
+      });
+    });
+  },
+
+  sexes: function(done, cacheIsOk) {
+    if(cacheIsOk && CACHE.SEXES) return done(null, CACHE.SEXES);
+    db.get().query("SELECT CASE gender WHEN 0 THEN 'F' WHEN 1 THEN 'M' ELSE 'U' END AS sex, COUNT(*) AS num FROM patient_info_copy GROUP BY CASE gender WHEN 0 THEN 'F' WHEN 1 THEN 'M' ELSE 'U' END", function(err, rows) {
+      if (err) return done(err);
+      CACHE.SEXES = rows;
       done(null, rows);
     });
   },
@@ -391,6 +422,30 @@ var query = {
 
     exerciseFrequencyPerWeek: function(user, done) {
       doQuery(permissions.distributionExerciseFrequencyPerWeek, { user: user }, done);
+    }
+
+  },
+
+  model: {
+
+    defaultValues: function(user, done){
+      query.ages(function(err, ages){
+        if(err) return done(err);
+        query.sexes(function(err, sexes){
+          if(err) return done(err);
+          return done(null, {age: ages, sexes: sexes});
+        }, true);
+      }, true);
+    },
+
+    averageCompliance: function(user, params, done) {
+      query.summary.last_updated(function(err, lu) {
+        query.ages(function(err, ages){
+          query.sexes(function(err, sexes){
+            doQuery(permissions.modelAverageCompliance, { user: user, params: params, last_updated: lu}, done);
+          }, true);
+        }, true);
+      }, true);
     }
 
   }

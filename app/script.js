@@ -1,33 +1,32 @@
-/*jslint browser: true*/
-/*jshint -W055 */
+const layout = require('./layout.js');
+const data = require('./data.js');
+const $ = require('jquery');
 
-var layout = require('./layout.js'),
-  data = require('./data.js');
+// Put jquery in global space for bootstrap and metismenu
+window.$ = $;
+window.jQuery = $;
+require('bootstrap');
+require('metismenu');
 
-var App = {
+
+const App = {
   init: function init() {
-    /*$(window).load(function() {
-      $('.loading-container').fadeOut(1000, function() {
-        //$(this).remove();
-      });
-    });*/
-    /******************************************
+    /** ****************************************
      *** This happens when the page is ready ***
      ******************************************/
-    $(document).on('ready', function() {
-      setTimeout(function(){
+    $(document).on('ready', () => {
+      setTimeout(() => {
         $('#side-menu').metisMenu();
-      },0);
-      data.getLastUpdated(function(val){
-        console.log(val);
+      }, 0);
+      data.getLastUpdated(() => {
         layout.loadView(location.pathname, location.hash);
       });
     });
 
-    $(window).on('popstate', function(e) {
+    $(window).on('popstate', () => {
       layout.loadView(location.pathname, location.hash);
     });
-  }
+  },
 };
 
 module.exports = App;

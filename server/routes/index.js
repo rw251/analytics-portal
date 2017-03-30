@@ -35,7 +35,7 @@ module.exports = function(passport) {
   /* Handle Login POST */
   router.post('/login', passport.authenticate('login', { failureFlash: true, failureRedirect: '/login' }), function(req, res) {
     var red = req.session.redirect_to || '/';
-    if(red==='/') red = '/portal';
+    if (red === '/') red = '/portal';
     if (req.body.hash) red += '#' + req.body.hash;
     req.session.redirect_to = null;
     delete req.session.redirect_to;
@@ -120,13 +120,13 @@ module.exports = function(passport) {
   });
 
   router.post('/config', isAuthenticated, isAdmin, function(req, res) {
-    lookup.addGroup(req.body.name, function(err){
+    lookup.addGroup(req.body.name, function(err) {
       res.render('pages/config.jade', { lookup: lookup.cache() });
     });
   });
 
   router.post('/config/:name', isAuthenticated, isAdmin, function(req, res) {
-    lookup.updateGroup(req.params.name, req.body.newtext, function(err){
+    lookup.updateGroup(req.params.name, req.body.newtext, function(err) {
       //res.render('pages/config.jade', { lookup: lookup.cache() });
       res.redirect('/config');
     });
@@ -134,13 +134,13 @@ module.exports = function(passport) {
 
   /* api */
 
-  router.get('/api/lastupdated', isAuthenticated, function(req, res){
-    queries.summary.last_updated(function(err, dt){
+  router.get('/api/lastupdated', isAuthenticated, function(req, res) {
+    queries.summary.last_updated(function(err, dt) {
       res.send(dt);
     });
   });
 
-  router.get('/api/sidebar', isAuthenticated, function(req, res){
+  router.get('/api/sidebar', isAuthenticated, function(req, res) {
     res.send(permissions.sidebar.roles[req.user.roles[0]]);
   });
 
@@ -158,8 +158,8 @@ module.exports = function(passport) {
     });
   });
 
-  router.get('/api/locations', isAuthenticated, function(req,res){
-    queries.locations.all(req.user, function(err,val){
+  router.get('/api/locations', isAuthenticated, function(req, res) {
+    queries.locations.all(req.user, function(err, val) {
       res.send(val);
     });
   });
@@ -178,8 +178,8 @@ module.exports = function(passport) {
     res.send(Object.keys(queries.distribution));
   });
 
-  router.get('/api/test/:method', isAuthenticated, function(req,res){
-    queries.test(req.user, req.params.method, function(err, val){
+  router.get('/api/test/:method', isAuthenticated, function(req, res) {
+    queries.test(req.user, req.params.method, function(err, val) {
       res.send(val);
     });
   });
@@ -204,11 +204,25 @@ module.exports = function(passport) {
     });
   });
 
-  router.get('/', isAuthenticated, function(req, res, next){
+  router.get('/api/model', isAuthenticated, function(req, res, next) {
+    queries.model.defaultValues(req.user, function(err, val) {
+      if (err) next(err);
+      else res.send(val);
+    });
+  });
+
+  router.post('/api/model', isAuthenticated, function(req, res, next) {
+    queries.model.averageCompliance(req.user, req.body, function(err, val) {
+      if (err) next(err);
+      else res.send(val);
+    });
+  });
+
+  router.get('/', isAuthenticated, function(req, res, next) {
     res.render('pages/index.jade', { admin: req.user.roles.indexOf("admin") > -1, fullname: req.user.fullname });
   });
 
-  router.get('/portal', isAuthenticated, function(req, res, next){
+  router.get('/portal', isAuthenticated, function(req, res, next) {
     res.render('pages/portal.jade', { isPortal: true, admin: req.user.roles.indexOf("admin") > -1, menuItems: permissions.sidebar.roles[req.user.roles[0]], fullname: req.user.fullname });
   });
 
