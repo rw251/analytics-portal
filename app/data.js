@@ -146,10 +146,10 @@ const data = {
     $.getJSON('/api/model', (model) => {
       const modelData = model;
         // min max age
-      if (modelData.age) {
+      if (modelData.ages) {
         modelData.ageFrom = 120;
         modelData.ageTo = 0;
-        modelData.age.forEach((v) => {
+        modelData.ages.forEach((v) => {
           if (v.age && v.age < modelData.ageFrom) {
             modelData.ageFrom = v.age;
           }
@@ -173,7 +173,6 @@ const data = {
       localforage.setItem('modelDefaults', modelData);
       return callback(modelData);
     }).error(() => callback({}));
-    // });
   },
 
 };

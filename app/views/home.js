@@ -1,19 +1,19 @@
-var sidebar = require('./components/sidebar.js');
+const sidebar = require('./components/sidebar.js');
+const $ = require('jquery');
+const homeTmpl = require('../templates/home.jade');
 
-var home = {
+const home = {
 
-  show: function(){
-
-    var tmpl = require('../templates/home');
-    var html = tmpl();
+  show() {
+    const html = homeTmpl();
     $('#page').html(html);
     $('#toggle-button').addClass('home-screen');
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand:not([href*=portal])').addClass("selected");
+    $('.navbar-brand').removeClass('selected');
+    $('.navbar-brand:not([href*=portal])').addClass('selected');
 
     sidebar.hide();
-  }
+  },
 
 };
 

@@ -6,6 +6,7 @@ const $ = require('jquery');
 window.$ = $;
 window.jQuery = $;
 require('bootstrap');
+require('bootstrap-select');
 require('metismenu');
 
 

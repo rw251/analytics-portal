@@ -56,7 +56,7 @@ const side = {
   },
 
   highlight() {
-    const url = window.location;
+    const url = window.location.href;
     $('ul.nav a').removeClass('active');
     let elList = $('ul.nav a').filter(function listFilter1() {
       return this.href === url;
@@ -66,7 +66,8 @@ const side = {
         return this.href[this.href.length - 1] === '#';
       });
     }
-    let element = elList.addClass('active').parent();
+    let element = elList.addClass('active').parent().parent().addClass('in')
+      .parent();
 
     while (element.is('li')) {
       element = element.parent().addClass('in').parent();

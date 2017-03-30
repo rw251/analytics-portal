@@ -36,16 +36,26 @@ const portal = {
   },
 
   wireup() {
+    $('.selectpicker').selectpicker({
+      dropupAuto: false,
+    });
+
     $('form').on('submit', function submit(e) {
       // First disable and rename button
-      $('button').prop('disabled', true).text('Generating...');
+      $('button[type="submit"]').prop('disabled', true).text('Generating...');
 
       $('#output').html(waitingTmpl());
       const values = {};
       $.each($(this).serializeArray(), (i, field) => {
-        values[field.name] = field.value;
+        // For multiselect selects we need to push these into an array
+        if (values[field.name] && typeof values[field.name] === 'object') {
+          values[field.name].push(field.value);
+        } else if (values[field.name]) {
+          values[field.name] = [values[field.name], field.value];
+        } else {
+          values[field.name] = field.value;
+        }
       });
-      console.log(values);
 
       $.ajax({
         type: 'POST',
@@ -63,13 +73,13 @@ const portal = {
             outcomes: [
               {
                 name: 'Session frequency compliance',
-                mean: stats.mean(doneProportions),
-                sd: stats.standardDeviation(doneProportions),
+                mean: stats.mean(doneProportions).toFixed(3),
+                sd: stats.standardDeviation(doneProportions).toFixed(3),
               },
               {
                 name: 'Overall compliance',
-                mean: stats.mean(complianceScores),
-                sd: stats.standardDeviation(complianceScores),
+                mean: stats.mean(complianceScores).toFixed(3),
+                sd: stats.standardDeviation(complianceScores).toFixed(3),
               },
             ],
           };
@@ -77,13 +87,13 @@ const portal = {
           const html = modelOutputTmpl(modelOutputData);
 
           $('#output').fadeOut(1000, function fadeOut() {
-            $('button').prop('disabled', false).text('Generate');
+            $('button[type="submit"]').prop('disabled', false).text('Generate');
             $(this).html(html).fadeIn(1000);
           });
         })
         .fail(() => {
           $('#output').fadeOut(1000, () => {
-            $('button').prop('disabled', false).text('Generate');
+            $('button[type="submit"]').prop('disabled', false).text('Generate');
           });
         });
 

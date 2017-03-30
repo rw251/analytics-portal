@@ -1,37 +1,35 @@
-var sidebar = require('./components/sidebar.js'),
-  data = require('../data.js');
+const sidebar = require('./components/sidebar.js');
+const data = require('../data.js');
+const $ = require('jquery');
+const locationstmpl = require('../templates/locations.jade');
+const waitingTmpl = require('../templates/waiting.jade');
 
-var portal = {
+const portal = {
 
-  show: function(){
-
-    data.getLocations(function(locationData){
-
-      if(location.hash.replace('#','')!=="locations") {
-        //user has tabbed away so ignore
+  show() {
+    data.getLocations((locationData) => {
+      if (location.hash.replace('#', '') !== 'locations') {
+        // user has tabbed away so ignore
         return;
       }
 
-      var tmpl = require('../templates/locations');
-      var html = tmpl(locationData);
-      $('#page').fadeOut(1000, function(){
+      const html = locationstmpl(locationData);
+      $('#page').fadeOut(1000, function onFadeOut() {
         $(this).html(html).fadeIn(1000);
       });
-
     });
 
-    var tmpl = require('../templates/waiting');
-    var html = tmpl();
+
+    const html = waitingTmpl();
 
     $('#page').html(html);
     $('#toggle-button').removeClass('home-screen');
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=portal]').addClass("selected");
+    $('.navbar-brand').removeClass('selected');
+    $('.navbar-brand[href*=portal]').addClass('selected');
 
     sidebar.show();
-
-  }
+  },
 
 };
 

@@ -1,223 +1,225 @@
-var db = require('./db.js'),
-  permissions = require('./permissions.js'),
-  locs = require('./locations.js'); //separate file cause full of data - makes atom slow.. if in this file..
+const db = require('./db.js');
+const permissions = require('./permissions.js');
+
+
+// Cache some things for reuse in the queries
+const CACHE = {};
+const GENDER = {
+  MALE: 1,
+  FEMALE: 0,
+};
 
 /**
- * @desc Executes the query and returns the results
- * @param object $sqlObject - The query/result object.
- * @param object $dataObj - The data to pass to query.
- * @param function(err, value) $callback - Called with the results
- * @return null
+ * Executes the query and returns the results
+ * @param  {object}   sqlObject The query/result object
+ * @param  {object}   dataObj   The data to pass to the query
+ * @param  {Function} callback  Called with the results
+ * @param  {string}   cacheName If specified the results are cached with this name
+ * @return undefined               Returns the executed callback
  */
-var doQuery = function(sqlObject, dataObj, callback, cacheName) {
-  var queryString = sqlObject.query(dataObj);
+const doQuery = function doQuery(sqlObject, dataObj, callback, cacheName) {
+  const queryString = sqlObject.query(dataObj);
   console.log(queryString);
   if (!queryString) {
-    //user not allowed
-    return callback(new Error("NOAUTH"));
+    // user not allowed
+    return callback(new Error('NOAUTH'));
   }
-  var r = "query" + Math.random().toString();
+  const r = `query${Math.random().toString()}`;
   if (db.isDebug()) console.time(r);
-  db.get().query(queryString, function(err, rows) {
+  return db.get().query(queryString, (err, rows) => {
     if (db.isDebug()) console.timeEnd(r);
     if (err) return callback(err);
-    if(sqlObject.result.length===2) {
-      //async takes callback
-      sqlObject.result(rows, function(err, rslt){
-        if (err) return callback(err);
-        if(cacheName) CACHE[cacheName] = rslt;
+    if (sqlObject.result.length === 2) {
+      // async takes callback
+      return sqlObject.result(rows, (err2, rslt) => {
+        if (err2) return callback(err2);
+        if (cacheName) CACHE[cacheName] = rslt;
         return callback(null, rslt);
       });
-    } else {
-      var rslt = sqlObject.result(rows);
-      if(cacheName) CACHE[cacheName] = rslt;
-      return callback(null, rslt);
     }
+    const rslt = sqlObject.result(rows);
+    if (cacheName) CACHE[cacheName] = rslt;
+    return callback(null, rslt);
   });
 };
 
-// Cache some things for reuse in the queries
-var CACHE={};
-
-var query = {
+const query = {
 
   summary: {
 
-    allParallel: function(user, done) {
+    allParallel(user, done) {
+      const rtn = { count: {}, diagnostic: {} };
+      let counter = 0;
+      const total = 13;
+      let hasErrored = false;
 
-      var rtn = { count: {}, diagnostic: {} };
-      var counter = 0;
-      var total = 13;
-      var hasErrored = false;
-
-      query.summary.last_updated(function(err, lu) {
+      query.summary.last_updated((err, lu) => {
         if (hasErrored) return;
         if (err) {
           hasErrored = true;
           return done(err);
         }
         rtn.updated = lu;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.patients(user, function(err, pats) {
+      query.summary.count.patients(user, (err, pats) => {
         if (hasErrored) return;
         if (err) {
           hasErrored = true;
           return done(err);
         }
         rtn.count.allpatients = pats;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.active_patients(user, function(err, act) {
+      query.summary.count.active_patients(user, (err, act) => {
         if (hasErrored) return;
         if (err) {
           hasErrored = true;
           return done(err);
         }
         rtn.count.activepatients = act;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.discharged_patients(user, function(err, dis) {
+      query.summary.count.discharged_patients(user, (err, dis) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.dischargedpatients = dis;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.locations(user, function(err, locs) {
+      query.summary.count.locations(user, (err, locs) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.locations = locs;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.physios(user, function(err, phys) {
+      query.summary.count.physios(user, (err, phys) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.physios = phys;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.diagnoses(user, function(err, diags) {
+      query.summary.count.diagnoses(user, (err, diags) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.diagnoses = diags;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.diagnosesUnique(user, function(err, diags) {
+      query.summary.count.diagnosesUnique(user, (err, diags) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.diagnosesUnique = diags;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.prescriptions(user, function(err, rxs) {
+      query.summary.count.prescriptions(user, (err, rxs) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.prescriptions = rxs;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.summary.count.prescriptionsUnique(user, function(err, rxs) {
+      query.summary.count.prescriptionsUnique(user, (err, rxs) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.count.prescriptionsUnique = rxs;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.diagnostic.fieldPercentage.age(user, function(err, dAge) {
+      query.diagnostic.fieldPercentage.age(user, (err, dAge) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.diagnostic.age = dAge;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.diagnostic.fieldPercentage.occupation(user, function(err, dOcc) {
+      query.diagnostic.fieldPercentage.occupation(user, (err, dOcc) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.diagnostic.occupation = dOcc;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-      query.diagnostic.fieldPercentage.diagnosis(user, function(err, dDia) {
+      query.diagnostic.fieldPercentage.diagnosis(user, (err, dDia) => {
         if (hasErrored) return;
-        if (err && err.message !== "NOAUTH") {
+        if (err && err.message !== 'NOAUTH') {
           hasErrored = true;
           return done(err);
         }
         if (!err) rtn.diagnostic.diagnoses = dDia;
-        counter++;
+        counter += 1;
         if (counter === total) return done(null, rtn);
       });
-
     },
 
-    all: function(user, done) {
-      var rtn = { count: {}, diagnostic: {} };
-      query.summary.last_updated(function(err, lu) {
-        if (err) return done(err);
+    all(user, done) {
+      const rtn = { count: {}, diagnostic: {} };
+      query.summary.last_updated((luErr, lu) => {
+        if (luErr) return done(luErr);
         rtn.updated = lu;
-        query.summary.count.patients(user, function(err, pats) {
-          if (err) return done(err);
+        return query.summary.count.patients(user, (paErr, pats) => {
+          if (paErr) return done(paErr);
           rtn.count.allpatients = pats;
-          query.summary.count.active_patients(user, function(err, act) {
-            if (err) return done(err);
+          return query.summary.count.active_patients(user, (acErr, act) => {
+            if (acErr) return done(acErr);
             rtn.count.activepatients = act;
-            query.summary.count.discharged_patients(user, function(err, dis) {
-              if (err && err.message !== "NOAUTH") return done(err);
-              if (!err) rtn.count.dischargedpatients = dis;
-              query.summary.count.locations(user, function(err, locs) {
-                if (err && err.message !== "NOAUTH") return done(err);
-                if (!err) rtn.count.locations = locs;
-                query.summary.count.physios(user, function(err, phys) {
-                  if (err && err.message !== "NOAUTH") return done(err);
-                  if (!err) rtn.count.physios = phys;
-                  query.summary.count.diagnoses(user, function(err, diags) {
-                    if (err && err.message !== "NOAUTH") return done(err);
-                    if (!err) rtn.count.diagnoses = diags;
-                    query.summary.count.prescriptions(user, function(err, rxs) {
-                      if (err && err.message !== "NOAUTH") return done(err);
-                      if (!err) rtn.count.prescriptions = rxs;
-                      query.diagnostic.fieldPercentage.age(user, function(err, dAge) {
-                        if (err && err.message !== "NOAUTH") return done(err);
-                        if (!err) rtn.diagnostic.age = dAge;
-                        query.diagnostic.fieldPercentage.occupation(user, function(err, dOcc) {
-                          if (err && err.message !== "NOAUTH") return done(err);
-                          if (!err) rtn.diagnostic.occupation = dOcc;
-                          query.diagnostic.fieldPercentage.diagnosis(user, function(err, dDia) {
-                            if (err && err.message !== "NOAUTH") return done(err);
-                            if (!err) rtn.diagnostic.diagnoses = dDia;
+            return query.summary.count.discharged_patients(user, (diErr, dis) => {
+              if (diErr && diErr.message !== 'NOAUTH') return done(diErr);
+              if (!diErr) rtn.count.dischargedpatients = dis;
+              return query.summary.count.locations(user, (loErr, locs) => {
+                if (loErr && loErr.message !== 'NOAUTH') return done(loErr);
+                if (!loErr) rtn.count.locations = locs;
+                return query.summary.count.physios(user, (phErr, phys) => {
+                  if (phErr && phErr.message !== 'NOAUTH') return done(phErr);
+                  if (!phErr) rtn.count.physios = phys;
+                  return query.summary.count.diagnoses(user, (diaErr, diags) => {
+                    if (diaErr && diaErr.message !== 'NOAUTH') return done(diaErr);
+                    if (!diaErr) rtn.count.diagnoses = diags;
+                    return query.summary.count.prescriptions(user, (prErr, rxs) => {
+                      if (prErr && prErr.message !== 'NOAUTH') return done(prErr);
+                      if (!prErr) rtn.count.prescriptions = rxs;
+                      return query.diagnostic.fieldPercentage.age(user, (agErr, dAge) => {
+                        if (agErr && agErr.message !== 'NOAUTH') return done(agErr);
+                        if (!agErr) rtn.diagnostic.age = dAge;
+                        return query.diagnostic.fieldPercentage.occupation(user, (occErr, dOcc) => {
+                          if (occErr && occErr.message !== 'NOAUTH') return done(occErr);
+                          if (!occErr) rtn.diagnostic.occupation = dOcc;
+                          return query.diagnostic.fieldPercentage.diagnosis(user, (dErr, dDia) => {
+                            if (dErr && dErr.message !== 'NOAUTH') return done(dErr);
+                            if (!dErr) rtn.diagnostic.diagnoses = dDia;
                             return done(null, rtn);
                           });
                         });
@@ -232,98 +234,98 @@ var query = {
       });
     },
 
-    last_updated: function(done, cacheIsOk) {
-      if(cacheIsOk && CACHE.LAST_UPDATED) return done(null, CACHE.LAST_UPDATED);
-      doQuery(permissions.last_updated, {}, done, "LAST_UPDATED");
+    last_updated(done, cacheIsOk) {
+      if (cacheIsOk && CACHE.LAST_UPDATED) return done(null, CACHE.LAST_UPDATED);
+      return doQuery(permissions.last_updated, {}, done, 'LAST_UPDATED');
     },
 
     count: {
 
-      patients: function(user, done) {
-        doQuery(permissions.numberPatients, { user: user }, done);
+      patients(user, done) {
+        doQuery(permissions.numberPatients, { user }, done);
       },
 
-      active_patients: function(user, done) {
-        doQuery(permissions.numberActivePatients, { user: user }, done);
+      active_patients(user, done) {
+        doQuery(permissions.numberActivePatients, { user }, done);
       },
 
-      discharged_patients: function(user, done) {
-        doQuery(permissions.numberDischargedWithOutcome, { user: user }, done);
+      discharged_patients(user, done) {
+        doQuery(permissions.numberDischargedWithOutcome, { user }, done);
       },
 
-      locations: function(user, done) {
-        doQuery(permissions.numberLocations, { user: user }, done);
+      locations(user, done) {
+        doQuery(permissions.numberLocations, { user }, done);
       },
 
-      diagnoses: function(user, done) {
-        doQuery(permissions.numberTotalDiagnoses, { user: user }, done);
+      diagnoses(user, done) {
+        doQuery(permissions.numberTotalDiagnoses, { user }, done);
       },
 
-      diagnosesUnique: function(user, done) {
-        doQuery(permissions.numberUniqueDiagnoses, { user: user }, done);
+      diagnosesUnique(user, done) {
+        doQuery(permissions.numberUniqueDiagnoses, { user }, done);
       },
 
-      physios: function(user, done) {
-        doQuery(permissions.numberPhysios, { user: user }, done);
+      physios(user, done) {
+        doQuery(permissions.numberPhysios, { user }, done);
       },
 
-      prescriptions: function(user, done) {
-        doQuery(permissions.numberTotalPrescriptions, { user: user }, done);
+      prescriptions(user, done) {
+        doQuery(permissions.numberTotalPrescriptions, { user }, done);
       },
 
-      prescriptionsUnique: function(user, done) {
-        doQuery(permissions.numberUniquePrescriptions, { user: user }, done);
-      }
+      prescriptionsUnique(user, done) {
+        doQuery(permissions.numberUniquePrescriptions, { user }, done);
+      },
 
-    }
+    },
 
   },
 
-  occupations: function(done, cacheIsOk) {
-    if(cacheIsOk && CACHE.OCCUPATIONS) return done(null, CACHE.OCCUPATIONS);
-    db.get().query('SELECT occupation as val, COUNT(*) as num FROM patient_info_copy WHERE occupation is not null GROUP BY occupation', function(err, rows) {
+  occupations(done, cacheIsOk) {
+    if (cacheIsOk && CACHE.OCCUPATIONS) return done(null, CACHE.OCCUPATIONS);
+    return db.get().query('SELECT CASE WHEN occupation IS NULL THEN \'Unknown\' ELSE occupation END as val, COUNT(*) as num FROM patient_info_copy GROUP BY CASE WHEN occupation IS NULL THEN \'Unknown\' ELSE occupation END ORDER BY COUNT(*) DESC', (err, rows) => {
       if (err) return done(err);
       CACHE.OCCUPATIONS = rows;
-      done(null, rows);
+      return done(null, rows);
     });
   },
 
-  diagnoses: function(done, cacheIsOk) {
-    if(cacheIsOk && CACHE.DIAGNOSES) return done(null, CACHE.DIAGNOSES);
-    db.get().query('SELECT diagnosis as val, COUNT(*) as num FROM patient_info_copy WHERE diagnosis is not null AND diagnosis != "" GROUP BY diagnosis', function(err, rows) {
+  diagnoses(done, cacheIsOk) {
+    if (cacheIsOk && CACHE.DIAGNOSES) return done(null, CACHE.DIAGNOSES);
+    return db.get().query('SELECT CASE WHEN diagnosis is not null AND diagnosis != \'\' THEN diagnosis ELSE \'Unknown\' END as val, COUNT(*) as num FROM patient_info_copy GROUP BY CASE WHEN diagnosis is not null AND diagnosis != \'\' THEN diagnosis ELSE \'Unknown\' END ORDER BY COUNT(*) DESC', (err, rows) => {
       if (err) return done(err);
       CACHE.DIAGNOSES = rows;
-      done(null, rows);
+      return done(null, rows);
     });
   },
 
-  ages: function(done, cacheIsOk) {
-    if(cacheIsOk && CACHE.AGES) return done(null, CACHE.AGES);
-    query.summary.last_updated(function(err, lu) {
-      db.get().query("SELECT TIMESTAMPDIFF(YEAR,dateOfBirth,'" + lu.toISOString().substr(0,10) + "') AS age, count(*) AS num FROM patient_info_copy GROUP BY TIMESTAMPDIFF(YEAR,dateOfBirth,'" + lu.toISOString().substr(0,10) + "')", function(err, rows) {
+  ages(done, cacheIsOk) {
+    if (cacheIsOk && CACHE.AGES) return done(null, CACHE.AGES);
+    return query.summary.last_updated((luErr, lu) => {
+      db.get().query(`SELECT TIMESTAMPDIFF(YEAR,dateOfBirth,'${lu.toISOString().substr(0, 10)}') AS age, count(*) AS num FROM patient_info_copy GROUP BY TIMESTAMPDIFF(YEAR,dateOfBirth,'${lu.toISOString().substr(0, 10)}')`, (err, rows) => {
         if (err) return done(err);
         CACHE.AGES = rows;
-        done(null, rows);
+        return done(null, rows);
       });
     });
   },
 
-  sexes: function(done, cacheIsOk) {
-    if(cacheIsOk && CACHE.SEXES) return done(null, CACHE.SEXES);
-    db.get().query("SELECT CASE gender WHEN 0 THEN 'F' WHEN 1 THEN 'M' ELSE 'U' END AS sex, COUNT(*) AS num FROM patient_info_copy GROUP BY CASE gender WHEN 0 THEN 'F' WHEN 1 THEN 'M' ELSE 'U' END", function(err, rows) {
+  sexes(done, cacheIsOk) {
+    if (cacheIsOk && CACHE.SEXES) return done(null, CACHE.SEXES);
+    return db.get().query(`SELECT CASE gender WHEN ${GENDER.FEMALE} THEN 'F' WHEN ${GENDER.MALE} THEN 'M' ELSE 'U' END AS sex, COUNT(*) AS num FROM patient_info_copy GROUP BY CASE gender WHEN ${GENDER.FEMALE} THEN 'F' WHEN ${GENDER.MALE} THEN 'M' ELSE 'U' END`, (err, rows) => {
       if (err) return done(err);
       CACHE.SEXES = rows;
-      done(null, rows);
+      return done(null, rows);
     });
   },
 
-  sites: function(done) {
-    db.get().query('SELECT id, name FROM site', function(err, rows) {
+  sites(done) {
+    db.get().query('SELECT id, name FROM site', (err, rows) => {
       if (err) {
-        if (err.message === "NODB") return done(null, [{ id: 1, name: "Site A" }, { id: 2, name: "Site B" }, { id: 3, name: "Site C" }, { id: 4, name: "Site D" }]);
+        if (err.message === 'NODB') return done(null, [{ id: 1, name: 'Site A' }, { id: 2, name: 'Site B' }, { id: 3, name: 'Site C' }, { id: 4, name: 'Site D' }]);
         return done(err);
       }
-      done(null, rows);
+      return done(null, rows);
     });
   },
 
@@ -331,124 +333,140 @@ var query = {
 
     fieldPercentage: {
 
-      age: function(user, done) {
-        doQuery(permissions.percentAgeFields, { user: user }, done);
+      age(user, done) {
+        doQuery(permissions.percentAgeFields, { user }, done);
       },
 
-      diagnosis: function(user, done) {
-        doQuery(permissions.percentDiagnosisFields, { user: user }, done);
+      diagnosis(user, done) {
+        doQuery(permissions.percentDiagnosisFields, { user }, done);
       },
 
-      occupation: function(user, done) {
-        doQuery(permissions.percentOccupationFields, { user: user }, done);
-      }
+      occupation(user, done) {
+        doQuery(permissions.percentOccupationFields, { user }, done);
+      },
 
-    }
+    },
 
   },
 
-  test: function(user, method, done) {
-    doQuery(permissions[method], { user: user }, done);
+  test(user, method, done) {
+    doQuery(permissions[method], { user }, done);
   },
 
   locations: {
 
-    //all: locs
-    all: function(user, done){
-      doQuery(permissions.locations, {user: user}, done);
-    }
+    // all: locs
+    all(user, done) {
+      doQuery(permissions.locations, { user }, done);
+    },
 
   },
 
   top10: {
 
-    sitesPerPatient: function(user, done) {
-      doQuery(permissions.sitesByPatients, { user: user }, done);
+    sitesPerPatient(user, done) {
+      doQuery(permissions.sitesByPatients, { user }, done);
     },
-    prescriptionsPerPatient: function(user, done) {
-      doQuery(permissions.prescriptionsByPatients, { user: user }, done);
+    prescriptionsPerPatient(user, done) {
+      doQuery(permissions.prescriptionsByPatients, { user }, done);
     },
-    assessmentsPerPatient: function(user, done) {
-      doQuery(permissions.assessmentsByPatients, { user: user }, done);
+    assessmentsPerPatient(user, done) {
+      doQuery(permissions.assessmentsByPatients, { user }, done);
     },
-    physiosPerPatient: function(user, done) {
-      doQuery(permissions.physiosByNumberPatients, { user: user }, done);
+    physiosPerPatient(user, done) {
+      doQuery(permissions.physiosByNumberPatients, { user }, done);
     },
-    occupationsPerPatient: function(user, done) {
-      doQuery(permissions.occupationsByPatients, { user: user }, done);
+    occupationsPerPatient(user, done) {
+      doQuery(permissions.occupationsByPatients, { user }, done);
     },
-    mostCommonFaultByPatients: function(user, done) {
-      doQuery(permissions.mostCommonFaultByPatients, { user: user }, done);
+    mostCommonFaultByPatients(user, done) {
+      doQuery(permissions.mostCommonFaultByPatients, { user }, done);
     },
-    physiosByOutcome: function(user, done) {
-      doQuery(permissions.physiosByOutcome, { user: user }, done);
+    physiosByOutcome(user, done) {
+      doQuery(permissions.physiosByOutcome, { user }, done);
     },
-    deviceByAvgSessionTime: function(user, done) {
-      doQuery(permissions.deviceByAvgSessionTime, { user: user }, done);
+    deviceByAvgSessionTime(user, done) {
+      doQuery(permissions.deviceByAvgSessionTime, { user }, done);
     },
-    deviceByBearingLife: function(user, done) {
-      doQuery(permissions.deviceByBearingLife, { user: user }, done);
+    deviceByBearingLife(user, done) {
+      doQuery(permissions.deviceByBearingLife, { user }, done);
     },
-    deviceByCableLife: function(user, done) {
-      doQuery(permissions.deviceByCableLife, { user: user }, done);
+    deviceByCableLife(user, done) {
+      doQuery(permissions.deviceByCableLife, { user }, done);
     },
-    deviceByLoadFactor: function(user, done) {
-      doQuery(permissions.deviceByLoadFactor, { user: user }, done);
-    }
+    deviceByLoadFactor(user, done) {
+      doQuery(permissions.deviceByLoadFactor, { user }, done);
+    },
 
   },
 
   distribution: {
 
-    age: function(user, done) {
-      doQuery(permissions.distributionAge, { user: user }, done);
+    age(user, done) {
+      doQuery(permissions.distributionAge, { user }, done);
     },
 
-    sex: function(user, done) {
-      doQuery(permissions.distributionSex, { user: user }, done);
+    sex(user, done) {
+      doQuery(permissions.distributionSex, { user }, done);
     },
 
-    bmi: function(user, done) {
-      doQuery(permissions.distributionBMI, { user: user }, done);
+    bmi(user, done) {
+      doQuery(permissions.distributionBMI, { user }, done);
     },
 
-    timeOfSession: function(user, done) {
-      doQuery(permissions.distributionHours, { user: user }, done);
+    timeOfSession(user, done) {
+      doQuery(permissions.distributionHours, { user }, done);
     },
 
-    exerciseFrequencyPerDay: function(user, done) {
-      doQuery(permissions.distributionExerciseFrequencyPerDay, { user: user }, done);
+    exerciseFrequencyPerDay(user, done) {
+      doQuery(permissions.distributionExerciseFrequencyPerDay, { user }, done);
     },
 
-    exerciseFrequencyPerWeek: function(user, done) {
-      doQuery(permissions.distributionExerciseFrequencyPerWeek, { user: user }, done);
-    }
+    exerciseFrequencyPerWeek(user, done) {
+      doQuery(permissions.distributionExerciseFrequencyPerWeek, { user }, done);
+    },
 
   },
 
   model: {
 
-    defaultValues: function(user, done){
-      query.ages(function(err, ages){
-        if(err) return done(err);
-        query.sexes(function(err, sexes){
-          if(err) return done(err);
-          return done(null, {age: ages, sexes: sexes});
+    defaultValues(user, done) {
+      query.ages((ageErr, ages) => {
+        if (ageErr) return done(ageErr);
+        return query.sexes((sexErr, sexes) => {
+          if (sexErr) return done(sexErr);
+          return query.occupations((occErr, occupations) => {
+            if (occErr) return done(occErr);
+            return query.diagnoses((diagErr, diagnoses) => {
+              if (diagErr) return done(diagErr);
+              return done(null, { ages, sexes, occupations, diagnoses });
+            }, true);
+          }, true);
         }, true);
       }, true);
     },
 
-    averageCompliance: function(user, params, done) {
-      query.summary.last_updated(function(err, lu) {
-        query.ages(function(err, ages){
-          query.sexes(function(err, sexes){
-            doQuery(permissions.modelAverageCompliance, { user: user, params: params, last_updated: lu}, done);
+    averageCompliance(user, params, done) {
+      query.summary.last_updated((err1, lu) => {
+        query.ages(() => {
+          query.sexes(() => {
+            query.occupations((occErr, occupations) => {
+              query.diagnoses((diagErr, diagnoses) => {
+                doQuery(permissions.modelAverageCompliance, {
+                  user,
+                  params,
+                  last_updated: lu,
+                  occupations,
+                  diagnoses,
+                }, done);
+              }, true);
+            }, true);
           }, true);
         }, true);
       }, true);
-    }
+    },
 
-  }
+  },
 
 };
 

@@ -14,22 +14,36 @@
           input#ageto.form-control(type="number",placeholder="Age to",name="ageTo", value=ageTo)
         .col-sm-4
           label.control-label(for="ageUnknown") Age unknown: 
-          label.checkbox-inline
-            input(name="ageUnknown",type="checkbox", checked)
-            = "(n=" + ageUnknown + ") "
+          input.form-control(name="ageUnknown",type="checkbox", checked)
+          //= "(n=" + ageUnknown + ") "
       .form-group
         .col-sm-1
           label Sex: 
         .col-sm-10.col-offset-sm-1
           label.checkbox-inline
             input(name="sexMale",type="checkbox", checked)
-            = "Male (n=" + M + ") "
+            | Male
+            //= "Male (n=" + M + ") "
           label.checkbox-inline
             input(name="sexFemale",type="checkbox", checked)
-            = "Female (n=" + F + ") "
+            | Female
+            //= "Female (n=" + F + ") "
           label.checkbox-inline
             input(name="sexOther",type="checkbox", checked)
-            = "Unknown (n=" + U + ") "
+            | Unknown
+            //= "Unknown (n=" + U + ") "
+      .form-group
+        .col-sm-12
+          label(for="occupations") Occupations: 
+          select.selectpicker.form-control(name="occupations", data-live-search="true", data-actions-box="true", multiple)
+            - each occupation,i in occupations
+              option(value=i, selected)= occupation.val + " (" + occupation.num + ")"
+      .form-group
+        .col-sm-12
+          label(for="diagnoses") Diagnoses: 
+          select.selectpicker.form-control(name="diagnoses", data-live-search="true", data-actions-box="true", multiple)
+            - each diagnosis,i in diagnoses
+              option(value=i, selected)= diagnosis.val + " (" + diagnosis.num + ")"
       .form-group
         .col-sm-12
           button#generate.btn.btn-default(type="submit") Generate

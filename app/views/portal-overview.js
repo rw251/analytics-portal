@@ -1,46 +1,43 @@
-var sidebar = require('./components/sidebar.js'),
-  charts = require('../charts.js'),
-  data = require('../data.js');
+const sidebar = require('./components/sidebar.js');
+const charts = require('../charts.js');
+const data = require('../data.js');
+const $ = require('jquery');
+const overviewTmpl = require('../templates/overview.jade');
+const waitingTmpl = require('../templates/waiting.jade');
 
-var portal = {
+const portal = {
 
-  show: function() {
-
-    data.getSummary(function(summary) {
-
-      if(location.hash!=="") {
-        //user has tabbed away so ignore
+  show() {
+    data.getSummary((summary) => {
+      if (location.hash !== '') {
+        // user has tabbed away so ignore
         return;
       }
 
-      var tmpl = require('../templates/overview');
-      var html = tmpl(summary);
+      const html = overviewTmpl(summary);
 
-      $('#page').fadeOut(1000, function(){
+      $('#page').fadeOut(1000, function onFadeOut() {
         $(this).html(html).fadeIn(1000);
 
-        ["sitesPerPatient", "physiosPerPatient"].forEach(function(v, i) {
-          charts.drawTop10Chart(v, $('#chartTop' + i));
+        ['sitesPerPatient', 'physiosPerPatient'].forEach((v, i) => {
+          charts.drawTop10Chart(v, $(`#chartTop${i}`));
         });
 
         charts.drawAgeDistribution($('#chartDist0'));
         charts.drawSexDistribution($('#chartDist1'));
       });
-
     });
 
-    var tmpl = require('../templates/waiting');
-    var html = tmpl();
+    const html = waitingTmpl();
 
     $('#page').html(html);
     $('#toggle-button').removeClass('home-screen');
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=portal]').addClass("selected");
+    $('.navbar-brand').removeClass('selected');
+    $('.navbar-brand[href*=portal]').addClass('selected');
 
     sidebar.show();
-
-  }
+  },
 
 };
 

@@ -1,17 +1,17 @@
-var sidebar = require('./components/sidebar.js'),
-  charts = require('../charts.js');
+const sidebar = require('./components/sidebar.js');
+const charts = require('../charts.js');
+const $ = require('jquery');
+const distributionsTmpl = require('../templates/distributions.jade');
 
-var portal = {
+const portal = {
 
-  show: function(){
-
-    var tmpl = require('../templates/distributions');
-    var html = tmpl();
+  show() {
+    const html = distributionsTmpl();
     $('#page').html(html);
     $('#toggle-button').removeClass('home-screen');
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=portal]').addClass("selected");
+    $('.navbar-brand').removeClass('selected');
+    $('.navbar-brand[href*=portal]').addClass('selected');
 
     charts.drawAgeDistribution($('#chart1'));
     charts.drawSexDistribution($('#chart2'));
@@ -21,9 +21,8 @@ var portal = {
     charts.drawExerciseFrequencyPerWeekDistribution($('#chart6'));
 
     sidebar.show();
-    //sidebar.wireup();
-
-  }
+    // sidebar.wireup();
+  },
 
 };
 

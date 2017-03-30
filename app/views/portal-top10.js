@@ -1,44 +1,40 @@
-var sidebar = require('./components/sidebar.js'),
-  charts = require('../charts.js'),
-  data = require('../data.js');
+const sidebar = require('./components/sidebar.js');
+const charts = require('../charts.js');
+const data = require('../data.js');
+const $ = require('jquery');
+const top10Tmpl = require('../templates/top10.jade');
+const waitingTmpl = require('../templates/waiting.jade');
 
-var portal = {
+const portal = {
 
-  show: function() {
-
-    data.getTop10Categories(function(cats) {
-
-      if (location.hash.replace('#', '') !== "top10") {
-        //user has tabbed away so ignore
+  show() {
+    data.getTop10Categories((cats) => {
+      if (location.hash.replace('#', '') !== 'top10') {
+        // user has tabbed away so ignore
         return;
       }
 
-      var tmpl = require('../templates/top10');
-      var html = tmpl({ n: cats.length });
+      const html = top10Tmpl({ n: cats.length });
 
-      $('#page').fadeOut(1000, function() {
+      $('#page').fadeOut(1000, function onFadeOut() {
         $(this).html(html).fadeIn(1000);
 
-        cats.forEach(function(v, idx) {
-          charts.drawTop10Chart(v, $('#chart' + idx));
+        cats.forEach((v, idx) => {
+          charts.drawTop10Chart(v, $(`#chart${idx}`));
         });
       });
-
-
     });
 
-    var tmpl = require('../templates/waiting');
-    var html = tmpl();
+    const html = waitingTmpl();
 
     $('#page').html(html);
     $('#toggle-button').removeClass('home-screen');
 
-    $('.navbar-brand').removeClass("selected");
-    $('.navbar-brand[href*=portal]').addClass("selected");
+    $('.navbar-brand').removeClass('selected');
+    $('.navbar-brand[href*=portal]').addClass('selected');
 
     sidebar.show();
-
-  }
+  },
 
 };
 

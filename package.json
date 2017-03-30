@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "brunch watch --server",
+    "prebuild": "ncp ./node_modules/bootstrap/fonts/ ./app/assets/fonts/",
     "build": "brunch build --production",
     "postinstall": "npm run build",
     "watch": "brunch watch",
@@ -35,7 +36,6 @@
     "istanbul": "^0.4.5",
     "jade-brunch": "^2.8.0",
     "javascript-brunch": "^2.0.0",
-    "metismenu": "^2.7.0",
     "mocha": "^3.0.2",
     "sass-brunch": "^2.6.3"
   },
@@ -43,6 +43,7 @@
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.7",
+    "bootstrap-select": "^1.12.2",
     "chart.js": "^2.2.1",
     "compression": "^1.6.2",
     "connect-flash": "^0.1.1",
@@ -57,6 +58,7 @@
     "mongoose": "^4.6.1",
     "morgan": "^1.7.0",
     "mysql": "^2.11.1",
+    "ncp": "^2.0.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "redbird": "^0.6.5",
