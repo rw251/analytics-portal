@@ -1,29 +1,27 @@
-var express = require('express');
-var compression = require('compression');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
+const express = require('express');
+const compression = require('compression');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
 
-var config = require('./server/config.js');
-var db = require('./server/db/db.js');
-var mongodb = require('./server/db/mongodb.js');
-var isDebug = true;
+const config = require('./server/config.js');
+const db = require('./server/db/db.js');
+const mongodb = require('./server/db/mongodb.js');
+const isDebug = true;
 
-module.exports = function(PORT, PATH, CALLBACK) {
-
-
-  if(isDebug) mongodb.enableDebug();
-  mongodb.connect(mongodb.PRODUCTION_URI, function(){
-    var lookup = require('./server/controllers/lookup.js');
-    lookup.getAll(function(err){
-      if(!err) console.log("Lookups cached");
+module.exports = function (PORT, PATH, CALLBACK) {
+  if (isDebug) mongodb.enableDebug();
+  mongodb.connect(mongodb.PRODUCTION_URI, () => {
+    const lookup = require('./server/controllers/lookup.js');
+    lookup.getAll((err) => {
+      if (!err) console.log('Lookups cached');
     });
   });
 
-  if(config.aws_mysql.host) {
-    if(isDebug) db.enableDebug();
-    db.connect(db.MODE_PRODUCTION, config.aws_mysql, function(err) {
+  if (config.aws_mysql.host) {
+    if (isDebug) db.enableDebug();
+    db.connect(db.MODE_PRODUCTION, config.aws_mysql, (err) => {
       if (err) {
         console.log('Unable to connect to MySQL.');
         process.exit(1);
@@ -31,9 +29,8 @@ module.exports = function(PORT, PATH, CALLBACK) {
         console.log('MySQL connection established');
       }
     });
-  }
-  else if (config.mysql.host) {
-    db.connect(db.MODE_PRODUCTION, config.mysql, function(err) {
+  } else if (config.mysql.host) {
+    db.connect(db.MODE_PRODUCTION, config.mysql, (err) => {
       if (err) {
         console.log('Unable to connect to MySQL.');
         process.exit(1);
@@ -42,60 +39,59 @@ module.exports = function(PORT, PATH, CALLBACK) {
       }
     });
   } else {
-    db.fakeDB(function() {
+    db.fakeDB(() => {
       console.log('Spoofed MySQL connection established');
     });
   }
 
 
+  const app = express();
 
-  var app = express();
-
-  //enables gzip
+  // enables gzip
   app.use(compression());
 
   // view engine setup
-  //app.set('views', path.join(__dirname, 'views'));
-  //app.set('view engine', 'ejs');
+  // app.set('views', path.join(__dirname, 'views'));
+  // app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'server/views'));
   app.set('view engine', 'pug');
 
   // uncomment after placing your favicon in /public
-  //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+  // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
   app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({
-    extended: false
+    extended: false,
   }));
 
   // Configuring Passport
-  var passport = require('passport');
-  var expressSession = require('express-session');
+  const passport = require('passport');
+  const expressSession = require('express-session');
   app.use(expressSession({
     secret: config.passport.secret,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
   }));
   app.use(passport.initialize());
   app.use(passport.session());
 
   // Using the flash middleware provided by connect-flash to store messages in session
   // and displaying in templates
-  var flash = require('connect-flash');
+  const flash = require('connect-flash');
   app.use(flash());
 
   // Initialize Passport
-  var initPassport = require('./server/passport/init');
+  const initPassport = require('./server/passport/init');
   initPassport(passport);
 
-  var routes = require('./server/routes/index')(passport);
+  const routes = require('./server/routes/index')(passport);
   app.use('/', routes);
 
   app.use(express.static(path.join(__dirname, PATH)));
 
   // catch 404 and forward to error handler
-  app.use(function(req, res, next) {
-    var err = new Error('Not Found');
+  app.use((req, res, next) => {
+    const err = new Error('Not Found');
     err.status = 404;
     next(err);
   });
@@ -105,22 +101,33 @@ module.exports = function(PORT, PATH, CALLBACK) {
   // development error handler
   // will print stacktrace
   if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use((err, req, res, next) => {
       res.status(err.status || 500);
       res.render('pages/error.jade', {
         message: err.message,
-        error: err
+        error: err,
       });
     });
   }
 
+  // Force ssl on heroku if in production mode
+  const forceSsl = function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(['https://', req.get('Host'), req.url].join(''));
+    }
+    return next();
+  };
+  if (app.get('env') === 'production') {
+    app.use(forceSsl);
+  }
+
   // production error handler
   // no stacktraces leaked to user
-  app.use(function(err, req, res, next) {
+  app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.render('pages/error.jade', {
       message: err.message,
-      error: {}
+      error: {},
     });
   });
 
@@ -128,14 +135,14 @@ module.exports = function(PORT, PATH, CALLBACK) {
    * Module dependencies.
    */
 
-  var debug = require('debug')('passport-mongo:server');
-  var http = require('http');
+  const debug = require('debug')('passport-mongo:server');
+  const http = require('http');
 
   /**
    * Get port from config or environment and store in Express.
    */
 
-  var port = PORT || config.server.port;
+  let port = PORT || config.server.port;
   if (!port) port = process.env.PORT || '3000';
   app.set('port', port);
 
@@ -143,7 +150,7 @@ module.exports = function(PORT, PATH, CALLBACK) {
    * Create HTTP server.
    */
 
-  var server = http.createServer(app);
+  const server = http.createServer(app);
 
   /**
    * Listen on provided port, on all network interfaces.
@@ -162,16 +169,16 @@ module.exports = function(PORT, PATH, CALLBACK) {
       throw error;
     }
 
-    var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+    const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
+        console.error(`${bind} requires elevated privileges`);
         process.exit(1);
         break;
       case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+        console.error(`${bind} is already in use`);
         process.exit(1);
         break;
       default:
@@ -185,11 +192,10 @@ module.exports = function(PORT, PATH, CALLBACK) {
 
   function onListening() {
     CALLBACK();
-    var addr = server.address();
-    var bind = typeof addr === 'string' ?
-      'pipe ' + addr :
-      'port ' + addr.port;
-    debug('Listening on ' + bind);
+    const addr = server.address();
+    const bind = typeof addr === 'string' ?
+      `pipe ${addr}` :
+      `port ${addr.port}`;
+    debug(`Listening on ${bind}`);
   }
-
 };
