@@ -158,6 +158,63 @@ const drawBarDistribution = function drawBarDistribution(ctx, result) {
   });
 };
 
+const drawTop10 = function drawTop10(ctx, result) {
+  const newdata = result.data.slice(0, 10);
+  ctx.parent().find('.chart-title').text(result.title);
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: newdata.map(v => formatLabel(v.name, 20)), // [result.title],
+      datasets: [
+        {
+          label: result.title,
+          data: newdata.map(v => v.value),
+          backgroundColor: 'rgba(80,80,83,0.8)',
+        },
+      ],
+    },
+    options: {
+      legend: {
+        display: false,
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+          },
+        }],
+      },
+      animation: {
+        duration: 0,
+      },
+    },
+  });
+
+  // populate table
+  const html = top10TableTmpl({ items: result.data });
+  ctx.parent().find('img').remove();
+  ctx.parent().find('.table-wrapper').hide().html(html);
+  ctx.parent().find('.show-table').off('click').on('click', function showTableClick() {
+    if ($(this).text() === 'Show as table') {
+      $(this).text('Show as chart').removeClass('btn-info').addClass('btn-success');
+      const currentCanvasHeight = $(this).parent().parent().find('canvas')
+        .height();
+      $(this).parent().parent().find('canvas')
+        .hide();
+      $(this).parent().parent().find('.table-wrapper')
+        .show()
+        .css('height', currentCanvasHeight);
+    } else {
+      $(this).text('Show as table').removeClass('btn-success').addClass('btn-info');
+      $(this).parent().parent().find('canvas')
+        .show();
+      $(this).parent().parent().find('.table-wrapper')
+        .hide()
+        .css('height', '');
+    }
+  });
+};
+
 const chts = {
   drawAgeDistribution(ctx) {
     data.getAgeDistribution((result) => {
@@ -264,61 +321,12 @@ const chts = {
 
   drawTop10Chart(category, ctx) {
     data.getTop10(category, (result) => {
-      const newdata = result.data.slice(0, 10);
-      ctx.parent().find('.chart-title').text(result.title);
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: newdata.map(v => formatLabel(v.name, 20)), // [result.title],
-          datasets: [
-            {
-              label: result.title,
-              data: newdata.map(v => v.value),
-              backgroundColor: 'rgba(80,80,83,0.8)',
-            },
-          ],
-        },
-        options: {
-          legend: {
-            display: false,
-          },
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: true,
-              },
-            }],
-          },
-          animation: {
-            duration: 0,
-          },
-        },
-      });
-
-      // populate table
-      const html = top10TableTmpl({ items: result.data });
-      ctx.parent().find('img').remove();
-      ctx.parent().find('.table-wrapper').hide().html(html);
-      ctx.parent().find('.show-table').off('click').on('click', function showTableClick() {
-        if ($(this).text() === 'Show as table') {
-          $(this).text('Show as chart').removeClass('btn-info').addClass('btn-success');
-          const currentCanvasHeight = $(this).parent().parent().find('canvas')
-            .height();
-          $(this).parent().parent().find('canvas')
-            .hide();
-          $(this).parent().parent().find('.table-wrapper')
-            .show()
-            .css('height', currentCanvasHeight);
-        } else {
-          $(this).text('Show as table').removeClass('btn-success').addClass('btn-info');
-          $(this).parent().parent().find('canvas')
-            .show();
-          $(this).parent().parent().find('.table-wrapper')
-            .hide()
-            .css('height', '');
-        }
-      });
+      drawTop10(ctx, result);
     });
+  },
+
+  drawTop10ChartWithData(result, ctx) {
+    drawTop10(ctx, result);
   },
 
 };

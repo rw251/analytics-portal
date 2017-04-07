@@ -2,6 +2,7 @@ const $ = require('jquery');
 const sidebar = require('./components/sidebar.js');
 const stats = require('simple-statistics');
 const data = require('../data');
+const charts = require('../charts');
 const modelTmpl = require('../templates/model.jade');
 const waitingTmpl = require('../templates/waiting.jade');
 const modelOutputTmpl = require('../templates/model-output.jade');
@@ -65,11 +66,11 @@ const portal = {
         contentType: 'application/json',
       })
         .done((d) => {
-          const doneProportions = d.map(v => v.doneProportion);
-          const complianceScores = d.map(v => v.complianceScore);
+          const doneProportions = d.model.map(v => v.doneProportion);
+          const complianceScores = d.model.map(v => v.complianceScore);
 
           const modelOutputData = {
-            sampleSize: d.length,
+            sampleSize: d.model.length,
             outcomes: [
               {
                 name: 'Session frequency compliance',
@@ -88,7 +89,11 @@ const portal = {
 
           $('#output').fadeOut(1000, function fadeOut() {
             $('button[type="submit"]').prop('disabled', false).text('Generate');
-            $(this).html(html).fadeIn(1000);
+            $(this).html(html).show();
+            setTimeout(() => {
+              charts.drawTop10ChartWithData(d.mostPrescribed, $('#most-freq-prescribed'));
+              charts.drawTop10ChartWithData(d.mostAssessed, $('#most-freq-assessed'));
+            }, 0);
           });
         })
         .fail(() => {

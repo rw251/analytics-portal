@@ -933,6 +933,70 @@ module.exports = {
       return rows;
     },
   },
+
+  modelMostFreqPrescribedMotion: {
+    text: 'Most frequenlty prescribed motions for a group of patients',
+    roles: {
+      mujo: auth.yes,
+      operator: auth.yes,
+      provider: auth.no,
+      payor: auth.no,
+    },
+    query(dataObj) {
+      const lastUpdatedString = dataObj.last_updated.toISOString().substr(0, 10);
+      const filterSQL = sqlFromParams(dataObj.params, lastUpdatedString, dataObj.occupations,
+        dataObj.diagnoses);
+
+      return q(this.roles, dataObj.user.roles[0], [
+        `SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name2, count(*) as value FROM exercise e INNER JOIN prescription p ON e.prescriptionId = p.id INNER JOIN patient_info_copy pi ON pi.userId = p.userId WHERE p.name NOT LIKE 'External Assessment' AND p.name NOT LIKE 'Internal Assessment' AND frequency is not null ${filterSQL} GROUP BY name2 ORDER by COUNT(*) DESC;`,
+        `SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name2, count(*) as value FROM exercise e INNER JOIN prescription p ON e.prescriptionId = p.id INNER JOIN patient_info_copy pi ON pi.userId = p.userId WHERE p.name NOT LIKE 'External Assessment' AND p.name NOT LIKE 'Internal Assessment' AND frequency is not null ${filterSQL} GROUP BY name2 ORDER by COUNT(*) DESC;`,
+        '',
+      ]);
+    },
+    result(rows) {
+      // can't call the column "name" in the query due to a naming conflict so call
+      // it name2 and fix here
+      const rowsOutput = rows.map((v) => {
+        const vv = v;
+        vv.name = v.name2;
+        delete vv.name2;
+        return vv;
+      });
+      return { title: 'Most frequently prescribed motions for this group', data: rowsOutput };
+    },
+  },
+
+  modelMostFreqUsedAssessment: {
+    text: 'Most frequenlty used assessment for a group of patients',
+    roles: {
+      mujo: auth.yes,
+      operator: auth.yes,
+      provider: auth.no,
+      payor: auth.no,
+    },
+    query(dataObj) {
+      const lastUpdatedString = dataObj.last_updated.toISOString().substr(0, 10);
+      const filterSQL = sqlFromParams(dataObj.params, lastUpdatedString, dataObj.occupations,
+        dataObj.diagnoses);
+
+      return q(this.roles, dataObj.user.roles[0], [
+        `SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name2, count(*) as value FROM exercise e INNER JOIN prescription p ON e.prescriptionId = p.id INNER JOIN patient_info_copy pi ON pi.userId = p.userId WHERE (p.name LIKE 'External Assessment' OR p.name LIKE 'Internal Assessment') ${filterSQL} GROUP BY name2 ORDER by COUNT(*) DESC;`,
+        `SELECT case when exerciseStationId = 1 and minElbowAngle=maxElbowAngle then CONCAT('Abduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 0 and minElbowAngle=maxElbowAngle then CONCAT('Adduction at ',minElbowAngle,'° from ',minShoulderAngle,'° to ',maxShoulderAngle,'°')  when exerciseStationId = 1 and minShoulderAngle =maxShoulderAngle then CONCAT('External rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') when exerciseStationId = 0 and minShoulderAngle =maxShoulderAngle then CONCAT('Internal rotation at ',minShoulderAngle,'° from ',minElbowAngle,'° to ',maxElbowAngle,'°') else 'PNF' end as name2, count(*) as value FROM exercise e INNER JOIN prescription p ON e.prescriptionId = p.id INNER JOIN patient_info_copy pi ON pi.userId = p.userId WHERE (p.name LIKE 'External Assessment' OR p.name LIKE 'Internal Assessment') ${filterSQL} GROUP BY name2 ORDER by COUNT(*) DESC;`,
+        '',
+      ]);
+    },
+    result(rows) {
+      // can't call the column "name" in the query due to a naming conflict so call
+      // it name2 and fix here
+      const rowsOutput = rows.map((v) => {
+        const vv = v;
+        vv.name = v.name2;
+        delete vv.name2;
+        return vv;
+      });
+      return { title: 'Most frequently used assessment for this group', data: rowsOutput };
+    },
+  },
   // implants in db?? recovery rate = outcome ??
   implantsByRecoveryRate: {
     text: 'Implants ranked by recovery rate',

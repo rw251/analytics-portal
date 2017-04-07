@@ -452,13 +452,34 @@ const query = {
           query.sexes(() => {
             query.occupations((occErr, occupations) => {
               query.diagnoses((diagErr, diagnoses) => {
-                doQuery(permissions.modelAverageCompliance, {
-                  user,
-                  params,
-                  last_updated: lu,
-                  occupations,
-                  diagnoses,
-                }, done);
+                doQuery(permissions.modelAverageCompliance,
+                  { user, params, last_updated: lu, occupations, diagnoses },
+                  (compErr, modelResult) => {
+                    if(compErr) return done(compErr);
+                    return doQuery(permissions.modelMostFreqPrescribedMotion, {
+                      user,
+                      params,
+                      last_updated: lu,
+                      occupations,
+                      diagnoses
+                    }, (freqErr, freqResult) => {
+                      if(freqErr) return done(freqErr);
+                      return doQuery(permissions.modelMostFreqUsedAssessment, {
+                        user,
+                        params,
+                        last_updated: lu,
+                        occupations,
+                        diagnoses,
+                      }, (assErr, assResult) => {
+                        if(assErr) return done(freqErr);
+                        return done(null, {
+                          model: modelResult, 
+                          mostPrescribed: freqResult,
+                          mostAssessed: assResult
+                        });
+                      });
+                    });
+                  });
               }, true);
             }, true);
           }, true);

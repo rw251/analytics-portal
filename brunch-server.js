@@ -111,7 +111,7 @@ module.exports = function (PORT, PATH, CALLBACK) {
   }
 
   // Force ssl on heroku if in production mode
-  const forceSsl = function (req, res, next) {
+  const forceSsl = function forceSsl(req, res, next) {
     if (req.headers['x-forwarded-proto'] !== 'https') {
       return res.redirect(['https://', req.get('Host'), req.url].join(''));
     }
@@ -123,7 +123,7 @@ module.exports = function (PORT, PATH, CALLBACK) {
 
   // production error handler
   // no stacktraces leaked to user
-  app.use((err, req, res, next) => {
+  app.use((err, req, res) => {
     res.status(err.status || 500);
     res.render('pages/error.jade', {
       message: err.message,

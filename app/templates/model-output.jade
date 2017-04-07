@@ -1,3 +1,5 @@
+include mixins/top10item
+
 h2 Output
 table.table
   tbody
@@ -8,3 +10,8 @@ table.table
       tr
         td= outcome.name
         td= "Mean: " + outcome.mean + ", standard deviation: " + outcome.sd
+.row
+  .col-lg-12
+    +top10Item("most-freq-prescribed")
+  .col-lg-12
+    +top10Item("most-freq-assessed")
